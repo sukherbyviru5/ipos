@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\ManageMember\KelasController as KelasAdmin;
 use App\Http\Controllers\Admin\ManageMember\SiswaController as SiswaAdmin;
 use App\Http\Controllers\Admin\ManageMember\StatusController as StatusSiswaAdmin;
 use App\Http\Controllers\Admin\ManageMember\KenaikanKelasController as KenaikanKelasAdmin;
+use App\Http\Controllers\Admin\Peminjaman\SettingPeminjamanController as SettingPeminjamanAdmin;
+use App\Http\Controllers\Admin\Peminjaman\PeminjamanSiswaController as PeminjamanSiswaAdmin;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -191,6 +193,41 @@ Route::prefix('admin')->middleware('admin')->group(function () {
                 Route::get('detail/{id}', [QrBukuAdmin::class, 'detail']);
                 // download selected QR codes
                 Route::get('print', [QrBukuAdmin::class, 'print']);
+            });
+           
+        });
+
+        // Manage Peminjaman Buku
+        Route::prefix('peminjaman')->group(function () {
+             Route::prefix('settings')->group(function () {
+                // Index
+                Route::get('/', [SettingPeminjamanAdmin::class, 'index']);
+                // Create
+                Route::post('/', [SettingPeminjamanAdmin::class, 'create']);
+                // Get All
+                Route::get('all', [SettingPeminjamanAdmin::class, 'getall']);
+                // Get
+                Route::post('get', [SettingPeminjamanAdmin::class, 'get']);
+                // Update
+                Route::post('update', [SettingPeminjamanAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [SettingPeminjamanAdmin::class, 'delete']);
+            });
+            Route::prefix('peminjaman-siswa')->group(function () {
+                // Index
+                Route::get('/', [PeminjamanSiswaAdmin::class, 'index']);
+                // Get All
+                Route::get('all', [PeminjamanSiswaAdmin::class, 'getall']);
+                // create
+                Route::get('create', [PeminjamanSiswaAdmin::class, 'create']);
+                // store
+                Route::post('store', [PeminjamanSiswaAdmin::class, 'store']);
+                // Delete
+                Route::delete('/', [PeminjamanSiswaAdmin::class, 'delete']);
+                // Check Scan Siswa
+                Route::post('/check-siswa', [PeminjamanSiswaAdmin::class, 'checkSiswa']);
+                // Check Scan Buku
+                Route::post('/check-buku', [PeminjamanSiswaAdmin::class, 'checkBuku']);
             });
            
         });

@@ -33,5 +33,13 @@ class QrBuku extends Model
         'updated_at' => 'datetime',
     ];
 
+    public function peminjamanSiswa()
+    {
+        return $this->hasMany(PeminjamanSiswa::class, 'id_qr', 'id');
+    }
+    public function buku()
+    {
+        return $this->belongsTo(Buku::class, 'id_buku', 'id');
+    }
     
 }

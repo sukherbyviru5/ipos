@@ -1,0 +1,170 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Peminjaman;
+
+use App\Models\Siswa;
+use App\Models\QrBuku;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Models\PeminjamanSiswa;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
+use Yajra\DataTables\Facades\DataTables;
+
+class PeminjamanSiswaController extends Controller
+{
+    public function index()
+    {
+        return view('admin.peminjaman.peminjaman_siswa.index')->with('sb', "Peminjaman Siswa");
+    }
+
+    public function create()
+    {
+        return view('admin.peminjaman.peminjaman_siswa.create')->with('sb', "Peminjaman Siswa");
+    }
+
+   public function store(Request $request)
+    {
+        Log::info('Storing peminjaman siswa with request: ' . json_encode($request->all()));
+
+        $validated = $request->validate([
+            'nik_siswa' => 'required|string|exists:siswa,nik',
+            'buku' => 'required|array|min:1',
+            'buku.*' => 'integer|exists:qr_buku,id',
+            'tanggal_pinjam' => 'required|date',
+            'tanggal_jatuh_tempo' => 'required|date|after_or_equal:tanggal_pinjam',
+            'status_peminjaman' => 'required|in:dipinjam,dikembalikan,telat',
+            '_token' => 'required|string',
+        ]);
+
+        $cacheKey = 'peminjaman_siswa_' . md5(json_encode($request->only(['nik_siswa', 'buku', 'tanggal_pinjam'])));
+        if (Cache::has($cacheKey)) {
+            return redirect()->to('admin/peminjaman/peminjaman-siswa')->with('error', 'Peminjaman sudah diproses sebelumnya.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->buku as $id_qr) {
+                PeminjamanSiswa::create([
+                    'nik_siswa' => $request->nik_siswa,
+                    'id_qr' => $id_qr,
+                    'tanggal_pinjam' => $request->tanggal_pinjam,
+                    'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
+                    'status_peminjaman' => $request->status_peminjaman,
+                    'perpanjangan_count' => 0,
+                    'denda_total' => 0,
+                ]);
+            }
+
+            Cache::put($cacheKey, true, now()->addMinutes(5));
+
+            DB::commit();
+
+            return redirect()->to('admin/peminjaman/peminjaman-siswa')->with('message', 'Peminjaman Siswa berhasil ditambahkan');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error storing peminjaman siswa: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menyimpan peminjaman: ' . $e->getMessage());
+        }
+    }
+
+    public function checkSiswa(Request $request)
+    {
+        $code = $request->code;
+        Log::info('Checking code: ' . $code);
+
+        $siswa = Siswa::where('nik', $code)->first();
+        if ($siswa) {
+            $data = [
+                'id' => $siswa->id,
+                'nik' => $siswa->nik,
+                'nama_siswa' => $siswa->nama_siswa,
+                'kelas' => $siswa->kelas->tingkat_kelas . ' ' . $siswa->kelas->kelompok . ' ( ' . $siswa->kelas->urusan_kelas . ' ) ( Jurusan ' . $siswa->kelas->jurusan . ' ) ',
+            ];
+            Log::info('Found siswa: ' . json_encode([$data]));
+            return response()->json(['type' => 'siswa', 'data' => $data]);
+        }
+        return response()->json(['error' => 'Kode tidak ditemukan'], 404);
+    }
+
+    public function checkBuku(Request $request)
+    {
+        $code = $request->code;
+        Log::info('Checking code: ' . $code);
+
+        $qr = QrBuku::where('kode', $code)->first();
+
+        if ($qr && $qr->buku) {
+            if ($qr->buku->jenis_buku && $qr->buku->jenis_buku->nama_jenis != 'Buku Siswa') {
+                Log::info('jenis Buku: ' . $qr->buku->jenis_buku->nama_jenis);
+                return response()->json(['error' => 'Kode tidak ditemukan atau bukan buku siswa'], 404);
+            }
+
+            $data = [
+                'id' => $qr->id,
+                'judul_buku' => $qr->buku->judul_buku,
+                'kode' => $qr->kode,
+            ];
+            Log::info('Found buku: ' . json_encode($data));
+            return response()->json(['type' => 'buku', 'data' => $data]);
+        }
+
+        return response()->json(['error' => 'Kode tidak ditemukan'], 404);
+    }
+
+
+
+    public function getall(Request $request)
+    {
+        $query = PeminjamanSiswa::with(['siswa', 'qrBuku.buku']) 
+            ->select('peminjaman_siswa.*')
+            ->orderBy('tanggal_pinjam', 'DESC')
+            ->get();
+
+        foreach ($query as $item) {
+            $item->tgl_pinjam = Carbon::parse($item->tanggal_pinjam)->locale('id')->isoFormat('D MMMM YYYY');
+            $item->tgl_jatuh_tempo = Carbon::parse($item->tanggal_jatuh_tempo)->locale('id')->isoFormat('D MMMM YYYY');
+        }
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('status_peminjaman', function (PeminjamanSiswa $peminjaman) {
+                $badgeClass = 'badge-secondary'; 
+                $status = $peminjaman->status_peminjaman;
+
+                if ($status == 'dipinjam') {
+                    $badgeClass = 'badge-success';
+                } elseif ($status == 'telat') {
+                    $badgeClass = 'badge-danger';
+                }
+
+                return '<span class="badge ' . $badgeClass . '">' . ucfirst($status) . '</span>';
+            })
+            ->addColumn('action', function (PeminjamanSiswa $peminjaman) {
+                return '
+                <div class="dropdown d-inline dropleft">
+                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a data-id="' . $peminjaman->id . '" class="dropdown-item hapus" href="#">Batal / Hapus Data</a></li>
+                    </ul>
+                </div>
+                ';
+            })
+            ->rawColumns(['action', 'status_peminjaman'])
+            ->make(true);
+    }
+
+
+    public function delete(Request $request)
+    {
+        PeminjamanSiswa::where('id', $request->id)->delete();
+        return response()->json([
+            'message' => "Peminjaman Siswa berhasil dihapus"
+        ], 200);
+    }
+}

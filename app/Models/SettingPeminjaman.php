@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JenisBuku extends Model
+class SettingPeminjaman extends Model
 {
     use HasFactory;
 
@@ -14,16 +14,14 @@ class JenisBuku extends Model
      *
      * @var string
      */
-    protected $table = 'jenis_buku';
+    protected $table = 'setting_peminjaman';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<string>
      */
-    protected $fillable = [
-        'nama_jenis',
-    ];
+    protected $guarded = [''];
 
     /**
      * The attributes that should be cast.
@@ -34,9 +32,4 @@ class JenisBuku extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-     public function buku()
-    {
-        return $this->hasMany(Buku::class, 'id_jenis');
-    }
 }

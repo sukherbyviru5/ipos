@@ -133,6 +133,37 @@
                     <span>QR Code Buku</span>
                 </a>
             </li>
+            <li class="menu-header">PEMINJAMAN BUKU SISWA</li>
+            @php
+                $menuPeminjaman = [
+                    [
+                        'title' => 'Setting Peminjaman',
+                        'url' => 'admin/peminjaman/settings',
+                        'page' => 'Setting Peminjaman',
+                    ],
+                    [
+                        'title' => 'Peminjaman Siswa',
+                        'url' => 'admin/peminjaman/peminjaman-siswa',
+                        'page' => 'Peminjaman Siswa',
+                    ],
+                ];
+                $pages = array_column($menuPeminjaman, 'page');
+            @endphp
+
+            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-book-reader"></i>
+                    <span>Peminjaman Buku</span>
+                </a>
+                <ul class="dropdown-menu">
+                    @foreach($menuPeminjaman as $menu)
+                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
+                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
+                        </li>
+                    @endforeach
+                </ul>
+            </li>
+            
            
         </ul>
     </aside>

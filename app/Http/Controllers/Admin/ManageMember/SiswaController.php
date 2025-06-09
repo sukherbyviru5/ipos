@@ -80,7 +80,7 @@ class SiswaController extends Controller
             $fotoPath = 'siswa_fotos/' . $filename;
         }
 
-        $qrCodePath = QrCodeHelper::generateQrCode($request->nisn, $request->nisn);
+        $qrCodePath = QrCodeHelper::generateQrCode($request->nik, $request->nik);
         Siswa::create([
             'nik' => $request->nik,
             'nisn' => $request->nisn,
@@ -155,7 +155,7 @@ class SiswaController extends Controller
             $fotoPath = 'siswa_fotos/' . $filename;
         }
 
-        $qrCodePath = QrCodeHelper::generateQrCode($siswa->nisn, $siswa->nisn);
+        $qrCodePath = QrCodeHelper::generateQrCode($siswa->nik, $siswa->nik);
         $siswa->update([
             'nik' => $request->nik,
             'nisn' => $request->nisn,

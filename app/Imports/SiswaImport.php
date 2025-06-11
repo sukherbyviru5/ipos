@@ -24,12 +24,10 @@ class SiswaImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // Skip if required fields are missing
         if (!isset($row['nik']) || !isset($row['nisn']) || !isset($row['nama']) || !isset($row['lp'])) {
             return null;
         }
 
-        // Check for duplicate NIK or NISN
         if (Siswa::where('nik', $row['nik'])->orWhere('nisn', $row['nisn'])->exists()) {
             return null;
         }

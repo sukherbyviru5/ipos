@@ -15,4 +15,17 @@ class Siswa extends Model
     {
         return $this->belongsTo(Kelas::class, 'id_kelas', 'id');
     }
+
+    static function getSiswaById($id)
+    {
+        return self::where('id', $id)->first();
+    }
+    static function getSiswaByNik($nik)
+    {
+        return self::where('nik', $nik)->first();
+    }
+    static function getSiswaByNisn($nisn)
+    {
+        return self::where('nisn', $nisn)->first();
+    }
 }

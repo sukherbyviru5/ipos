@@ -49,6 +49,11 @@
                         'page' => 'Data Kelas'
                     ],
                     [
+                        'title' => 'Guru',
+                        'url' => 'admin/manage-member/guru',
+                        'page' => 'Data Guru'
+                    ],
+                    [
                         'title' => 'Siswa',
                         'url' => 'admin/manage-member/siswa',
                         'page' => 'Data Siswa'
@@ -164,7 +169,71 @@
                 </ul>
             </li>
             
-           
+           {{-- --------------------------- stack cuy yang peminjaman dan pengembalian-------------------------------}}
+
+            <li class="menu-header">PUBLIKASI</li>
+
+            <li {{ $sb == 'Artikel' ? 'class=active' : '' }}>
+                <a class="nav-link" href="{{ url('admin/publikasi/artikel') }}"><i class="fas fa-newspaper"></i>
+                    <span>Artikel</span>
+                </a>
+            </li>
+
+            <li class="menu-header">SETTING APPS</li>
+            @php
+                $menuSettings = [
+                    [
+                        'title' => 'Banner',
+                        'url' => 'admin/setting/banner',
+                        'page' => 'Banner',
+                    ],
+                    [
+                        'title' => 'Video',
+                        'url' => 'admin/setting/video',
+                        'page' => 'Video',
+                    ],
+                    [
+                        'title' => 'Foto Kegiatan',
+                        'url' => 'admin/setting/foto',
+                        'page' => 'Foto Kegiatan',
+                    ],
+                    [
+                        'title' => 'Link',
+                        'url' => 'admin/setting/link',
+                        'page' => 'Link',
+                    ],
+                    [
+                        'title' => 'Profil Perpustakaan',
+                        'url' => 'admin/setting/profil_perpustakaan',
+                        'page' => 'Profil Perpustakaan',
+                    ],
+                    [
+                        'title' => 'Setting Apps',
+                        'url' => 'admin/setting/apps',
+                        'page' => 'Setting Apps',
+                    ],
+                    [
+                        'title' => 'Admin Accounts',
+                        'url' => 'admin/setting/admin',
+                        'page' => 'Admin Accounts',
+                    ],
+                ];
+                $pages = array_column($menuSettings, 'page');
+            @endphp
+
+            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-cog"></i>
+                    <span>Setting</span>
+                </a>
+                <ul class="dropdown-menu">
+                    @foreach($menuSettings as $menu)
+                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
+                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
+                        </li>
+                    @endforeach
+                </ul>
+            </li>
         </ul>
     </aside>
 </div>

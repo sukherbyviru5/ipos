@@ -19,17 +19,21 @@
 
     <script src="{{ asset('assets/mix/app.js') }}"></script>
     <script src="{{asset('dist/select2/js/select2.min.js')}}"></script>
+    <!-- include summernote css/js -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
     {{-- End Assets File --}}
 </head>
 <body>
     <style>
         .custom-radio[type="radio"] {
-            transform: scale(1.5); /* Perbesar ukuran radio */
+            transform: scale(1.5); 
         }
         .custom-control-label {
             cursor: pointer;
         }
-
+        .modal-backdrop {
+            width: 0 !important;
+        }
     </style>
     <div id="app">
         <div class="main-wrapper">

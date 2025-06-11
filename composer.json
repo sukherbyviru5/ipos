@@ -17,6 +17,7 @@
         "phpoffice/phpspreadsheet": "^1.29",
         "psr/simple-cache": "^2.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/pdf-to-image": "^1.2",
         "yajra/laravel-datatables-oracle": "~9.0",
         "yaza/laravel-google-drive-storage": "^2.0"
     },

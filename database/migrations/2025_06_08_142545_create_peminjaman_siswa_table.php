@@ -18,11 +18,10 @@ return new class extends Migration
             $table->string('nik_siswa');
             $table->unsignedBigInteger('id_qr');
             $table->date('tanggal_pinjam')->nullable(false);
-            $table->date('tanggal_jatuh_tempo')->nullable();
+            $table->date('tanggal_jatuh_tempo')->nullable(false);
             $table->date('tanggal_kembali')->nullable();
-            $table->unsignedInteger('perpanjangan_count')->default(0);
-            $table->decimal('denda_total', 10, 2)->default(0);
-            $table->enum('status_peminjaman', ['dipinjam', 'dikembalikan', 'telat'])->nullable(false);
+            $table->string('denda_total')->default(0);
+            $table->enum('status_peminjaman', ['dipinjam', 'dikembalikan', 'telat', 'bermasalah'])->nullable(false);
             $table->timestamps();
 
             $table->foreign('nik_siswa')->references('nik')->on('siswa')->onDelete('cascade');

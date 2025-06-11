@@ -201,8 +201,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="absensiInputBuku" class="form-label">Masukkan QR Code Buku</label>
-                        <input type="text" class="form-control" id="absensiInputBuku">
+                        <label for="mesinInputBuku" class="form-label">Masukkan QR Code Buku</label>
+                        <input type="text" class="form-control" id="mesinInputBuku">
                         <small class="text-success">*Masukan QR Code Buku</small>
                     </div>
                     <div class="text-center">
@@ -349,7 +349,7 @@
                         setTimeout(() => $('#qr-result-text-siswa').html(
                             '<small class="text-success">Ready Scan..</small>'), 1600);
                     },
-                    (error) => console.warn(error)
+                    // (error) => console.warn(error)
                 ).catch(err => console.error("Error starting camera:", err));
             }
 
@@ -367,7 +367,7 @@
                         setTimeout(() => $('#qr-result-text-buku').html(
                             '<small class="text-success">Ready Scan..</small>'), 1600);
                     },
-                    (error) => console.warn(error)
+                    // (error) => console.warn(error)
                 ).catch(err => console.error("Error starting book camera:", err));
             }
 
@@ -443,9 +443,9 @@
                     }).then(() => $('#machineModalBuku').modal('hide'));
                     return;
                 }
-                $('#absensiInputBuku').focus();
+                $('#mesinInputBuku').focus();
             });
-            $('#absensiInputBuku').on('keypress', function(e) {
+            $('#mesinInputBuku').on('keypress', function(e) {
                 if (e.which === 13) {
                     var code = $(this).val();
                     if (code) {
@@ -478,11 +478,24 @@
                             $('#machineModalSiswa').modal('hide');
                             $('#cameraModalSiswa').modal('hide');
                             $('#restart-section').show();
-                        } else if (response.type === 'buku' && !scannedData.buku.some(b => b.id ===
-                                response.data.id)) {
+                        } else if (response.type === 'buku' && !scannedData.buku.some(b => b.id === response.data.id)) {
+                            if (response.settings.batas_jumlah_buku_status === "aktif" &&
+                                scannedData.buku.length + 1 > response.settings.batas_jumlah_buku) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Batas Tercapai',
+                                    text: `Maksimum ${response.settings.batas_jumlah_buku} buku dapat dipinjam. Tidak dapat menambah buku lagi.`,
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    $('#cameraModalBuku').modal('hide');
+                                    $('#machineModalBuku').modal('hide');
+                                    stopCameraBuku();
+                                });
+                                return;
+                            }
                             scannedData.buku.push(response.data);
                             updateBookDetails();
-                            $('#absensiInputBuku').val('').focus();
+                            $('#mesinInputBuku').val('').focus();
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Buku Berhasil Discan',

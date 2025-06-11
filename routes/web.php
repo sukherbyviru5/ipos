@@ -3,19 +3,38 @@
 //----------------------------------------------------------------------
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Admin\DataBuku\KategoriBukuController as KategoriBukuAdmin;
 use App\Http\Controllers\Admin\DashboardController as DashboardAdmin;
-use App\Http\Controllers\Admin\DataBuku\DdcBukuController as DdcBukuAdmin;
-use App\Http\Controllers\Admin\DataBuku\BukuController as BukuAdmin;
-use App\Http\Controllers\Admin\DataBuku\QrBukuController as QrBukuAdmin;
-use App\Http\Controllers\Admin\DataBuku\KondisiBukuController as KondisiBukuAdmin;
-use App\Http\Controllers\Admin\DataBuku\JenisBukuController as JenisBukuAdmin;
+
+// manage member
 use App\Http\Controllers\Admin\ManageMember\KelasController as KelasAdmin;
 use App\Http\Controllers\Admin\ManageMember\SiswaController as SiswaAdmin;
-use App\Http\Controllers\Admin\ManageMember\StatusController as StatusSiswaAdmin;
+use App\Http\Controllers\Admin\ManageMember\GuruController as GuruAdmin;
 use App\Http\Controllers\Admin\ManageMember\KenaikanKelasController as KenaikanKelasAdmin;
-use App\Http\Controllers\Admin\Peminjaman\SettingPeminjamanController as SettingPeminjamanAdmin;
+use App\Http\Controllers\Admin\ManageMember\StatusController as StatusSiswaAdmin;
+
+// manage data buku
+use App\Http\Controllers\Admin\DataBuku\KondisiBukuController as KondisiBukuAdmin;
+use App\Http\Controllers\Admin\DataBuku\KategoriBukuController as KategoriBukuAdmin;
+use App\Http\Controllers\Admin\DataBuku\BukuController as BukuAdmin;
+use App\Http\Controllers\Admin\DataBuku\QrBukuController as QrBukuAdmin;
+use App\Http\Controllers\Admin\DataBuku\DdcBukuController as DdcBukuAdmin;
+use App\Http\Controllers\Admin\DataBuku\JenisBukuController as JenisBukuAdmin;
+
+// manage peminjaman
 use App\Http\Controllers\Admin\Peminjaman\PeminjamanSiswaController as PeminjamanSiswaAdmin;
+use App\Http\Controllers\Admin\Peminjaman\SettingPeminjamanController as SettingPeminjamanAdmin;
+
+// manage publikasi
+use App\Http\Controllers\Admin\Publikasi\ArtikelController as ArtikelAdmin;
+
+// manage setting
+use App\Http\Controllers\Admin\Setting\SettingAplikasiController as SettingAplikasiApps;
+use App\Http\Controllers\Admin\Setting\ProfilPerpustakaanController as ProfilPerpustakaanAdmin;
+use App\Http\Controllers\Admin\Setting\VideoController as VideoAdmin;
+use App\Http\Controllers\Admin\Setting\AdminController as AccountAdmin;
+use App\Http\Controllers\Admin\Setting\BannerController as BannerAdmin;
+use App\Http\Controllers\Admin\Setting\FotoController as FotoAdmin;
+use App\Http\Controllers\Admin\Setting\LinkController as LinkAdmin;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -59,7 +78,27 @@ Route::prefix('admin')->middleware('admin')->group(function () {
                 Route::delete('/', [KelasAdmin::class, 'delete']);
             });
             
-             // Siswa
+            // Siswa
+            Route::prefix('guru')->group(function () {
+                // Index
+                Route::get('/', [GuruAdmin::class, 'index'])->name('admin.guru.index');
+                // Get Kelas
+                Route::get('kelas', [GuruAdmin::class, 'getKelas']);
+                // Create
+                Route::post('/', [GuruAdmin::class, 'store']);
+                // Get All
+                Route::get('all', [GuruAdmin::class, 'getall']);
+                // Get
+                Route::post('get', [GuruAdmin::class, 'get']);
+                // Update
+                Route::put('/', [GuruAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [GuruAdmin::class, 'destroy']);
+                // Import
+                Route::post('import', [GuruAdmin::class, 'import']);
+            });
+
+            // Siswa
             Route::prefix('siswa')->group(function () {
                 // Index
                 Route::get('/', [SiswaAdmin::class, 'index'])->name('admin.siswa.index');
@@ -199,20 +238,13 @@ Route::prefix('admin')->middleware('admin')->group(function () {
 
         // Manage Peminjaman Buku
         Route::prefix('peminjaman')->group(function () {
-             Route::prefix('settings')->group(function () {
-                // Index
-                Route::get('/', [SettingPeminjamanAdmin::class, 'index']);
-                // Create
-                Route::post('/', [SettingPeminjamanAdmin::class, 'create']);
-                // Get All
-                Route::get('all', [SettingPeminjamanAdmin::class, 'getall']);
-                // Get
-                Route::post('get', [SettingPeminjamanAdmin::class, 'get']);
-                // Update
-                Route::post('update', [SettingPeminjamanAdmin::class, 'update']);
-                // Delete
-                Route::delete('/', [SettingPeminjamanAdmin::class, 'delete']);
+            Route::prefix('settings')->group(function () {
+                Route::get('/', [SettingPeminjamanAdmin::class, 'index'])->name('admin.peminjaman.settings.index');
+                Route::post('/store', [SettingPeminjamanAdmin::class, 'store'])->name('admin.peminjaman.settings.store');
+                Route::put('/update/{id}', [SettingPeminjamanAdmin::class, 'update'])->name('admin.peminjaman.settings.update');
             });
+
+            // Peminjaman Siswa
             Route::prefix('peminjaman-siswa')->group(function () {
                 // Index
                 Route::get('/', [PeminjamanSiswaAdmin::class, 'index']);
@@ -231,6 +263,116 @@ Route::prefix('admin')->middleware('admin')->group(function () {
             });
            
         });
+
+        Route::prefix('publikasi')->group(function () {
+            Route::prefix('artikel')->group(function () {
+                 // Index
+                Route::get('/', [ArtikelAdmin::class, 'index']);
+                // Create
+                Route::post('/', [ArtikelAdmin::class, 'create']);
+                // Get All
+                Route::get('all', [ArtikelAdmin::class, 'getall']);
+                // Get
+                Route::post('get', [ArtikelAdmin::class, 'get']);
+                // Update
+                Route::post('update', [ArtikelAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [ArtikelAdmin::class, 'delete']);
+            });
+        });
+
+        // Setting
+        Route::prefix('setting')->group(function () {
+            // Banner
+            Route::prefix('banner')->group(function () {
+                // Index
+                Route::get('/', [BannerAdmin::class, 'index']);
+                // Create
+                Route::post('/', [BannerAdmin::class, 'create']);
+                // Get All
+                Route::get('all', [BannerAdmin::class, 'getall']);
+                // Get
+                Route::post('get', [BannerAdmin::class, 'get']);
+                // Update
+                Route::post('update', [BannerAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [BannerAdmin::class, 'delete']);
+            });
+            // Video
+            Route::prefix('video')->group(function () {
+                // Index
+                Route::get('/', [VideoAdmin::class, 'index']);
+                // Create
+                Route::post('/', [VideoAdmin::class, 'create']);
+                // Get All
+                Route::get('all', [VideoAdmin::class, 'getall']);
+                // Get
+                Route::post('get', [VideoAdmin::class, 'get']);
+                // Update
+                Route::post('update', [VideoAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [VideoAdmin::class, 'delete']);
+            });
+            // foto
+            Route::prefix('foto')->group(function () {
+                // Index
+                Route::get('/', [FotoAdmin::class, 'index']);
+                // Create
+                Route::post('/', [FotoAdmin::class, 'create']);
+                // Get All
+                Route::get('all', [FotoAdmin::class, 'getall']);
+                // Get
+                Route::post('get', [FotoAdmin::class, 'get']);
+                // Update
+                Route::post('update', [FotoAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [FotoAdmin::class, 'delete']);
+            });
+            // Link
+            Route::prefix('link')->group(function () {
+                // Index
+                Route::get('/', [LinkAdmin::class, 'index']);
+                // Create
+                Route::post('/', [LinkAdmin::class, 'create']);
+                // Get All
+                Route::get('all', [LinkAdmin::class, 'getall']);
+                // Get
+                Route::post('get', [LinkAdmin::class, 'get']);
+                // Update
+                Route::post('update', [LinkAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [LinkAdmin::class, 'delete']);
+            });
+            // Profil Perpustakaan
+            Route::prefix('profil_perpustakaan')->group(function () {
+                Route::get('/', [ProfilPerpustakaanAdmin::class, 'index'])->name('admin.setting.profil_perpustakaan.index');
+                Route::post('/store', [ProfilPerpustakaanAdmin::class, 'store'])->name('admin.setting.profil_perpustakaan.store');
+                Route::put('/update/{id}', [ProfilPerpustakaanAdmin::class, 'update'])->name('admin.setting.profil_perpustakaan.update');
+            });
+            // Setting Aplikasi
+            Route::prefix('apps')->group(function () {
+                Route::get('/', [SettingAplikasiApps::class, 'index'])->name('admin.setting.apps.index');
+                Route::post('/store', [SettingAplikasiApps::class, 'store'])->name('admin.setting.apps.store');
+                Route::put('/update/{id}', [SettingAplikasiApps::class, 'update'])->name('admin.setting.apps.update');
+            });
+            Route::prefix('admin')->group(function () {
+                 // Index
+                Route::get('/', [AccountAdmin::class, 'index']);
+                // Create
+                Route::post('/', [AccountAdmin::class, 'create']);
+                // Get All
+                Route::get('all', [AccountAdmin::class, 'getall']);
+                // Get
+                Route::post('get', [AccountAdmin::class, 'get']);
+                // Update
+                Route::post('update', [AccountAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [AccountAdmin::class, 'delete']);
+            });
+
+           
+        });
+        
    
         
 });

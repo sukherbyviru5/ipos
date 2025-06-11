@@ -10,6 +10,7 @@ use App\Models\PeminjamanSiswa;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Models\SettingPeminjaman;
 use Illuminate\Support\Facades\Cache;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -27,14 +28,12 @@ class PeminjamanSiswaController extends Controller
 
    public function store(Request $request)
     {
-        Log::info('Storing peminjaman siswa with request: ' . json_encode($request->all()));
 
         $validated = $request->validate([
             'nik_siswa' => 'required|string|exists:siswa,nik',
             'buku' => 'required|array|min:1',
             'buku.*' => 'integer|exists:qr_buku,id',
             'tanggal_pinjam' => 'required|date',
-            'tanggal_jatuh_tempo' => 'required|date|after_or_equal:tanggal_pinjam',
             'status_peminjaman' => 'required|in:dipinjam,dikembalikan,telat',
             '_token' => 'required|string',
         ]);
@@ -47,14 +46,18 @@ class PeminjamanSiswaController extends Controller
         try {
             DB::beginTransaction();
 
+            $setting = SettingPeminjaman::first();
+            if (!$setting) {
+                throw new \Exception('Maaf Setting peminjaman belum ditentukan.');
+            }
+
             foreach ($request->buku as $id_qr) {
                 PeminjamanSiswa::create([
                     'nik_siswa' => $request->nik_siswa,
                     'id_qr' => $id_qr,
                     'tanggal_pinjam' => $request->tanggal_pinjam,
-                    'tanggal_jatuh_tempo' => $request->tanggal_jatuh_tempo,
+                    'tanggal_jatuh_tempo' => $setting->lama_peminjaman ? Carbon::parse($request->tanggal_pinjam)->addDays($setting->lama_peminjaman) : false,
                     'status_peminjaman' => $request->status_peminjaman,
-                    'perpanjangan_count' => 0,
                     'denda_total' => 0,
                 ]);
             }
@@ -97,6 +100,10 @@ class PeminjamanSiswaController extends Controller
 
         $qr = QrBuku::where('kode', $code)->first();
 
+        $setting = SettingPeminjaman::first();
+        if (!$setting) {
+            return response()->json(['error' => 'Maaf Setting peminjaman belum ditentukan.'], 403);
+        }
         if ($qr && $qr->buku) {
             if ($qr->buku->jenis_buku && $qr->buku->jenis_buku->nama_jenis != 'Buku Siswa') {
                 Log::info('jenis Buku: ' . $qr->buku->jenis_buku->nama_jenis);
@@ -108,8 +115,14 @@ class PeminjamanSiswaController extends Controller
                 'judul_buku' => $qr->buku->judul_buku,
                 'kode' => $qr->kode,
             ];
+
+            if ($qr->buku->stok_buku <= 0) {
+                Log::info('Buku tidak tersedia: ' . json_encode($data));
+                return response()->json(['error' => 'Buku tidak tersedia'], 404);
+            }
+
             Log::info('Found buku: ' . json_encode($data));
-            return response()->json(['type' => 'buku', 'data' => $data]);
+            return response()->json(['type' => 'buku', 'data' => $data, 'settings' => $setting]);
         }
 
         return response()->json(['error' => 'Kode tidak ditemukan'], 404);

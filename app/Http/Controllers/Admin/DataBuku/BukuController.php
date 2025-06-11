@@ -14,6 +14,7 @@ use App\Models\KategoriBuku;
 use Illuminate\Http\Request;
 use App\Helpers\QrCodeHelper;
 use App\Imports\DdcBukuImport;
+use App\Helpers\PdfToImageHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
@@ -247,6 +248,10 @@ class BukuController extends Controller
             $file->move(public_path('ebook_file'), $filename);
             $filePath = 'ebook_file/' . $filename;
             $data['ebook_file'] = $filePath;
+
+            // $outputDir = public_path('ebook_images/');
+            // $imagePaths = PdfToImageHelper::convertPdfToImages(public_path($filePath), $outputDir);
+            // dd($imagePaths);
         }
 
         

@@ -13,4 +13,13 @@ class Admin extends Authenticatable
         'id', 'nip_nik_nisn', 'nama', 'password', 'created_at', 'updated_at'
     ];
     protected $hidden = ['password'];
+
+    static function getAdminById($id)
+    {
+        return self::where('id', $id)->first();
+    }
+    static function getAdminByNipNikNisn($nip_nik_nisn)
+    {
+        return self::where('nip_nik_nisn', $nip_nik_nisn)->first();
+    }
 }

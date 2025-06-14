@@ -41,7 +41,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-         Schema::create('qr_buku', function (Blueprint $table) {
+        Schema::create('qr_buku', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_buku')->constrained('buku')->onDelete('cascade');
             $table->string('no_urut');

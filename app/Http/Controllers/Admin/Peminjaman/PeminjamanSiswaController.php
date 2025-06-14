@@ -26,9 +26,14 @@ class PeminjamanSiswaController extends Controller
         return view('admin.peminjaman.peminjaman_siswa.create')->with('sb', "Peminjaman Siswa");
     }
 
+    public function detail($id)
+    {
+        $peminjaman = PeminjamanSiswa::find($id);
+        return view('admin.peminjaman.peminjaman_siswa.detail', compact('peminjaman'))->with('sb', "Peminjaman Siswa");
+    }
+
    public function store(Request $request)
     {
-
         $validated = $request->validate([
             'nik_siswa' => 'required|string|exists:siswa,nik',
             'buku' => 'required|array|min:1',
@@ -40,7 +45,9 @@ class PeminjamanSiswaController extends Controller
 
         $cacheKey = 'peminjaman_siswa_' . md5(json_encode($request->only(['nik_siswa', 'buku', 'tanggal_pinjam'])));
         if (Cache::has($cacheKey)) {
-            return redirect()->to('admin/peminjaman/peminjaman-siswa')->with('error', 'Peminjaman sudah diproses sebelumnya.');
+            return response()->json([
+                'error' => 'Peminjaman sudah diproses sebelumnya.'
+            ], 409);
         }
 
         try {
@@ -48,15 +55,20 @@ class PeminjamanSiswaController extends Controller
 
             $setting = SettingPeminjaman::first();
             if (!$setting) {
-                throw new \Exception('Maaf Setting peminjaman belum ditentukan.');
+                throw new \Exception('Maaf, setting peminjaman belum ditentukan.');
             }
 
+            $grup = uniqid('PG-'); 
             foreach ($request->buku as $id_qr) {
-                PeminjamanSiswa::create([
+                $peminjaman = PeminjamanSiswa::create([
                     'nik_siswa' => $request->nik_siswa,
                     'id_qr' => $id_qr,
+                    'kode' => uniqid('PS-'), 
+                    'grup' => $grup,
                     'tanggal_pinjam' => $request->tanggal_pinjam,
-                    'tanggal_jatuh_tempo' => $setting->lama_peminjaman ? Carbon::parse($request->tanggal_pinjam)->addDays($setting->lama_peminjaman) : false,
+                    'tanggal_jatuh_tempo' => $setting->lama_peminjaman
+                        ? Carbon::parse($request->tanggal_pinjam)->addDays($setting->lama_peminjaman)
+                        : null,
                     'status_peminjaman' => $request->status_peminjaman,
                     'denda_total' => 0,
                 ]);
@@ -66,13 +78,20 @@ class PeminjamanSiswaController extends Controller
 
             DB::commit();
 
-            return redirect()->to('admin/peminjaman/peminjaman-siswa')->with('message', 'Peminjaman Siswa berhasil ditambahkan');
+            return response()->json([
+                'message' => 'Peminjaman Siswa berhasil ditambahkan.',
+                'grup' => $grup 
+            ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error storing peminjaman siswa: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal menyimpan peminjaman: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Gagal menyimpan peminjaman: ' . $e->getMessage()
+            ], 500);
         }
     }
+
 
     public function checkSiswa(Request $request)
     {
@@ -110,6 +129,12 @@ class PeminjamanSiswaController extends Controller
                 return response()->json(['error' => 'Kode tidak ditemukan atau bukan buku siswa'], 404);
             }
 
+            $peminjaman = PeminjamanSiswa::where('id_qr', $qr->id)->where('status_peminjaman', 'dipinjam')->first();
+            if($peminjaman) {
+                return response()->json(['error' => 'Buku ' . $qr->kode . ' masih berstatus dipinjam'], 404);
+            }
+
+
             $data = [
                 'id' => $qr->id,
                 'judul_buku' => $qr->buku->judul_buku,
@@ -144,6 +169,10 @@ class PeminjamanSiswaController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('buku', function (PeminjamanSiswa $peminjaman) {
+                    return '<a href="' . url('/admin/data-buku/detail/' . $peminjaman->qrBuku->buku->id) . '" target="_blank">'
+                        . e($peminjaman->qrBuku->kode ?? '-') . '</a>';
+            })
             ->addColumn('status_peminjaman', function (PeminjamanSiswa $peminjaman) {
                 $badgeClass = 'badge-secondary'; 
                 $status = $peminjaman->status_peminjaman;
@@ -157,21 +186,41 @@ class PeminjamanSiswaController extends Controller
                 return '<span class="badge ' . $badgeClass . '">' . ucfirst($status) . '</span>';
             })
             ->addColumn('action', function (PeminjamanSiswa $peminjaman) {
+                $detailLink = '<li><a class="dropdown-item" href="/admin/peminjaman/peminjaman-siswa/detail/' . $peminjaman->id . '">Detail</a></li>';
+
+                if ($peminjaman->status_peminjaman === 'dikembalikan') {
+                    $actions = $detailLink;
+                } else {
+                    $hapusLink = '<li><a data-id="' . $peminjaman->id . '" class="dropdown-item hapus" href="#">Batal / Hapus Data</a></li>';
+                    $actions = $hapusLink . $detailLink;
+                }
+
                 return '
-                <div class="dropdown d-inline dropleft">
-                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" aria-expanded="false">
-                        Action
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a data-id="' . $peminjaman->id . '" class="dropdown-item hapus" href="#">Batal / Hapus Data</a></li>
-                    </ul>
-                </div>
+                    <div class="dropdown d-inline dropleft">
+                        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" aria-haspopup="true" data-toggle="dropdown" aria-expanded="false">
+                            Action
+                        </button>
+                        <ul class="dropdown-menu">
+                            ' . $actions . '
+                        </ul>
+                    </div>
                 ';
             })
-            ->rawColumns(['action', 'status_peminjaman'])
+
+            ->rawColumns(['action', 'status_peminjaman', 'buku'])
             ->make(true);
     }
 
+
+    public function result(Request $request)
+    {
+        $peminjamans = PeminjamanSiswa::with(['siswa', 'qrBuku'])->where('grup', $request->get('grup'))->get();
+        $setting = SettingPeminjaman::first();
+        return view('admin.peminjaman.peminjaman_siswa.result', [
+            'peminjamans' => $peminjamans,
+            'setting'     => $setting
+        ]);
+    }
 
     public function delete(Request $request)
     {

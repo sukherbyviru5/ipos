@@ -1,22 +1,15 @@
 @extends('master')
-@section('title', 'Peminjaman Siswa - Peminjaman')
+@section('title', 'Buku Rusak/Hilang - Peminjaman')
 @section('content')
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Buat Peminjaman Baru</h1>
+                <h1>Laporkan Buku Rusak/Hilang</h1>
                 <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item"><a href="{{ url('admin/peminjaman/peminjaman-siswa') }}">Peminjaman Siswa</a>
-                    </div>
-                    <div class="breadcrumb-item">Buat Pinjaman</div>
+                    <div class="breadcrumb-item"><a href="{{ url('admin/peminjaman/buku-rusak-hilang') }}">Buku
+                            Rusak/Hilang</a></div>
+                    <div class="breadcrumb-item">Buat Laporan</div>
                 </div>
-            </div>
-            <div class="alert alert-primary">
-                <strong>Langkah-langkah:</strong><br>
-                1. Pilih metode scan (Mesin atau Kamera).<br>
-                2. Scan kartu siswa untuk memulai.<br>
-                3. Scan buku yang akan dipinjam (bisa lebih dari satu).<br>
-                4. Klik "Simpan Pinjaman" setelah semua data lengkap untuk mencetak struk.
             </div>
             <div class="section-body">
                 @if (session('message'))
@@ -32,7 +25,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                     <div class="section-title">Data Siswa</div>
+                                    <div class="section-title">Data Siswa</div>
                                 </div>
                                 <div class="scan-inputs">
                                     <div class="siswa-container">
@@ -70,13 +63,13 @@
                                 </div>
                                 <div id="book-details" class="list-group"></div>
                                 <div class="book-container">
-                                    <div id="book-scan-section" class="form-row mb-3" style="display: none;">
+                                    <div id="book-scan-section" class="row mb-3" style="display: none;">
                                         <div class="col-6 col-sm-6 col-md-6">
                                             <div class="form-group mesin-scan">
                                                 <label>Scan Kartu Buku</label>
                                                 <a href="#" class="btn btn-info w-100" data-toggle="modal"
                                                     data-target="#machineModalBuku">
-                                                    <i class="fa-solid fa-keyboard"></i> Buka Scan Mesin
+                                                    <i class="fa-solid fa-keyboard"></i> Buka Scan Mesin/Manual
                                                 </a>
                                             </div>
                                         </div>
@@ -90,21 +83,40 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label>Keadaan Buku</label>
+                                        <select id="status_buku" class="form-control" required>
+                                            <option value="">Pilih Keadaan Buku</option>
+                                            <option value="rusak">Rusak</option>
+                                            <option value="hilang">Hilang</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sanksi</label>
+                                        <input type="text" id="sanksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tanggal Laporan</label>
+                                        <input type="date" id="tanggal_laporan" class="form-control"
+                                            value="{{ date('Y-m-d') }}" readonly>
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary mt-4" id="save-loan" disabled>Simpan
-                                        Pinjaman</button>
+                                    <button type="button" class="btn btn-primary mt-4" id="save-report" disabled>Simpan
+                                        Laporan</button>
                                 </div>
                             </div>
                         </div>
                         <div class="mt-3">
-                            <a href="{{ url('admin/peminjaman/peminjaman-siswa') }}" class="btn btn-secondary">Kembali</a>
+                            <a href="{{ url('admin/peminjaman/buku-rusak-hilang') }}" class="btn btn-secondary">Kembali</a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     </div>
+
+    <!-- Camera Modal for Siswa -->
     <div class="modal fade" id="cameraModalSiswa" tabindex="-1" aria-labelledby="cameraModalSiswaLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -122,17 +134,19 @@
                         </select>
                     </div>
                     <div id="reader-siswa" style="width: 100%;"></div>
+                    <h4 class="fs-4 mb-1 card-title text-center">QR Code: <span id="qr-result-text-siswa"><small
+                                class="text-success">Ready Scan..</small></span></h4>
+                    <small class="text-center">Tunggu text <span class="text-success">Ready Scan..</span> lalu scan
+                        lagi.</small>
                 </div>
-                <h4 class="fs-4 mb-1 card-title text-center">QR Code: <span id="qr-result-text-siswa"><small
-                            class="text-success">Ready Scan..</small></span></h4>
-                <small class="text-center">Tunggu text <span class="text-success">Ready Scan..</span> lalu scan
-                    lagi.</small>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Machine Modal for Siswa -->
     <div class="modal fade" id="machineModalSiswa" tabindex="-1" aria-labelledby="machineModalSiswaLabel"
         aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
@@ -167,6 +181,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Camera Modal for Buku -->
     <div class="modal fade" id="cameraModalBuku" tabindex="-1" aria-labelledby="cameraModalBukuLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -185,36 +201,38 @@
                         </select>
                     </div>
                     <div id="reader-buku" style="width: 100%;"></div>
+                    <h4 class="fs-4 mb-1 card-title text-center">QR Code: <span id="qr-result-text-buku"><small
+                                class="text-success">Ready Scan..</small></span></h4>
+                    <small class="text-center">Tunggu text <span class="text-success">Ready Scan..</span> lalu scan
+                        lagi.</small>
                 </div>
-                <h4 class="fs-4 mb-1 card-title text-center">QR Code: <span id="qr-result-text-buku"><small
-                            class="text-success">Ready Scan..</small></span></h4>
-                <small class="text-center">Tunggu text <span class="text-success">Ready Scan..</span> lalu scan
-                    lagi.</small>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Machine Modal for Buku -->
     <div class="modal fade" id="machineModalBuku" tabindex="-1" aria-labelledby="machineModalBukuLabel"
         aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="machineModalBukuLabel">Scan Menggunakan Mesin</h5>
+                    <h5 class="modal-title" id="machineModalBukuLabel">Scan atau Cari Buku</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="mesinInputBuku" class="form-label">Masukkan QR Code Buku</label>
-                        <input type="text" class="form-control" id="mesinInputBuku">
-                        <small class="text-success">*Masukan QR Code Buku</small>
+                    <div class="mb-3 position-relative">
+                        <label for="mesinInputBuku" class="form-label">Masukkan QR Code atau Cari Buku</label>
+                        <input type="text" class="form-control" id="mesinInputBuku" autocomplete="off">
+                        <small class="text-success">*Masukkan QR Code atau ketik judul/kode buku untuk mencari</small>
+                        <div id="book-suggestions" class="autocomplete-suggestions" style="display: none;"></div>
                     </div>
-                     <div class="text-center">
-                        <p>Sambungkan mesin absensi ke komputer... <br>Lalu Scan menggunakan mesin dan kode akan masuk
-                            kedalam inputan diatas.</p>
+                    <div class="text-center">
+                        <p>Sambungkan mesin absensi ke komputer untuk scan, atau ketik untuk mencari buku secara manual.</p>
                         <div class="row">
                             <div class="col-6">
                                 <img src="{{ asset('assets/tutor_mesin.gif') }}" alt="" class="rounded">
@@ -230,11 +248,12 @@
             </div>
         </div>
     </div>
-    {{-- sound --}}
+
+    <!-- Audio -->
     <audio id="successSound" src="{{ asset('assets/success.mp3') }}" preload="auto"></audio>
     <audio id="errorSound" src="{{ asset('assets/error.mp3') }}" preload="auto"></audio>
 
-    <style> 
+    <style>
         .custom-select-wrapper {
             position: relative;
         }
@@ -267,19 +286,14 @@
             pointer-events: none;
         }
 
-        .list-group-item,
-        .student-table {
+        .student-table,
+        .list-group-item {
             border-radius: 8px;
             margin-bottom: 10px;
             padding: 5px;
             border: 1px solid #e9ecef;
             background: none;
             transition: all 0.2s ease;
-        }
-
-        .list-group-item:hover,
-        .student-table:hover {
-            background: none;
         }
 
         .student-table table,
@@ -298,17 +312,43 @@
             vertical-align: middle;
             white-space: nowrap;
             border: 1px solid #e9ecef;
+            font-size: 13px;
         }
 
-        .delete-book {
+        .list-group-item:hover,
+        .student-table:hover {
+            background: none;
+        }
+
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .autocomplete-item {
+            padding: 8px 12px;
             cursor: pointer;
-            color: #dc3545;
-            margin-left: 10px;
-            transition: color 0.2s ease;
+            transition: background 0.2s;
         }
 
-        .delete-book:hover {
-            color: #bd2130;
+        .autocomplete-item:hover {
+            background: #f8f9fa;
+        }
+
+        .autocomplete-item span {
+            display: block;
+            font-size: 12px;
+            color: #6c757d;
         }
 
         @media (max-width: 768px) {
@@ -328,8 +368,8 @@
                 padding: 8px;
             }
 
-            .list-group-item,
-            .student-table {
+            .student-table,
+            .list-group-item {
                 font-size: 14px;
                 padding: 10px;
             }
@@ -340,24 +380,26 @@
             }
         }
     </style>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
-            $('body').addClass('sidebar-mini');
-            $('.dropdown-menu').hide();
-
             let html5QrcodeSiswa = null;
             let html5QrcodeBuku = null;
             let scannedData = {
                 siswa: null,
-                buku: []
+                buku: null
             };
             const studentDetails = $('#student-details');
             const bookDetails = $('#book-details');
-            const saveButton = $('#save-loan');
+            const saveButton = $('#save-report');
+            const statusBuku = $('#status_buku');
+            const sanksiInput = $('#sanksi');
+            const bookInput = $('#mesinInputBuku');
+            const suggestionsContainer = $('#book-suggestions');
 
-            // Initialize Toast mixin
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -370,40 +412,133 @@
                 }
             });
 
+            statusBuku.on('change', function() {
+                const status = $(this).val();
+                if (status === 'rusak') {
+                    sanksiInput.val('Fotocopy Buku');
+                } else if (status === 'hilang') {
+                    sanksiInput.val('Bayar Denda Sesuai Harga Buku');
+                } else {
+                    sanksiInput.val('');
+                }
+                checkSaveButton();
+            });
+
+            let searchTimeout;
+            bookInput.on('input', function() {
+                clearTimeout(searchTimeout);
+                const query = $(this).val().trim();
+                if (query.length < 2) {
+                    suggestionsContainer.hide().empty();
+                    return;
+                }
+                searchTimeout = setTimeout(() => {
+                    // Show loading text
+                    suggestionsContainer.html('<div class="text-center py-2">Mencari data...</div>')
+                        .show();
+                    $.ajax({
+                        url: "{{ url('admin/peminjaman/buku-rusak-hilang/search') }}",
+                        type: 'GET',
+                        data: {
+                            term: query
+                        },
+                        success: function(data) {
+                            suggestionsContainer.empty();
+                            if (data.length === 0) {
+                                suggestionsContainer.html(
+                                    '<div class="text-center py-2">Data tidak ditemukan</div>'
+                                    ).show();
+                                return;
+                            }
+                            data.forEach(book => {
+                                suggestionsContainer.append(`
+                        <div class="autocomplete-item" data-id="${book.id}" data-kode="${book.kode}" data-judul="${book.judul_buku}">
+                            ${book.judul_buku}
+                            <span>Kode: ${book.kode}</span>
+                        </div>
+                    `);
+                            });
+                            suggestionsContainer.show();
+                        },
+                        error: function(err) {
+                            suggestionsContainer.hide().empty();
+                            Toast.fire({
+                                icon: 'error',
+                                title: 'Gagal mencari buku'
+                            });
+                        }
+                    });
+                }, 300);
+            });
+
+            suggestionsContainer.on('click', '.autocomplete-item', function() {
+                if (!scannedData.siswa) {
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Silakan scan kartu siswa terlebih dahulu.'
+                    });
+                    return;
+                }
+                const bookData = {
+                    id: $(this).data('id'),
+                    kode: $(this).data('kode'),
+                    judul_buku: $(this).data('judul')
+                };
+                if (!scannedData.buku) {
+                    scannedData.buku = bookData;
+                    document.getElementById('successSound').play();
+                    updateBookDetails();
+                    Toast.fire({
+                        icon: 'success',
+                        title: `Buku: ${bookData.judul_buku} berhasil dipilih`
+                    });
+                    bookInput.val('');
+                    suggestionsContainer.hide().empty();
+                    $('#machineModalBuku').modal('hide');
+                    checkSaveButton();
+                } else {
+                    document.getElementById('errorSound').play();
+                    Toast.fire({
+                        icon: 'warning',
+                        title: 'Buku sudah dipilih.'
+                    });
+                }
+            });
+
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#mesinInputBuku, #book-suggestions').length) {
+                    suggestionsContainer.hide().empty();
+                }
+            });
+
             function initializeCameraSiswa(cameraId) {
                 html5QrcodeSiswa = new Html5Qrcode("reader-siswa");
                 html5QrcodeSiswa.start({
-                        facingMode: cameraId
-                    }, {
-                        fps: 10,
-                        qrbox: 250
-                    },
-                    (decodedText) => {
-                        handleScan(decodedText, 'siswa');
-                        $('#qr-result-text-siswa').text(decodedText);
-                        setTimeout(() => $('#qr-result-text-siswa').html(
-                            '<small class="text-success">Ready Scan..</small>'), 1600);
-                    },
-                    // (error) => console.warn(error)
-                ).catch(err => console.error("Error starting camera:", err));
+                    facingMode: cameraId
+                }, {
+                    fps: 10,
+                    qrbox: 250
+                }, (decodedText) => {
+                    handleScan(decodedText, 'siswa');
+                    $('#qr-result-text-siswa').text(decodedText);
+                    setTimeout(() => $('#qr-result-text-siswa').html(
+                        '<small class="text-success">Ready Scan..</small>'), 1600);
+                }).catch(err => console.error("Error starting camera:", err));
             }
 
             function initializeCameraBuku(cameraId) {
                 html5QrcodeBuku = new Html5Qrcode("reader-buku");
                 html5QrcodeBuku.start({
-                        facingMode: cameraId
-                    }, {
-                        fps: 10,
-                        qrbox: 250
-                    },
-                    (decodedText) => {
-                        handleScan(decodedText, 'buku');
-                        $('#qr-result-text-buku').text(decodedText);
-                        setTimeout(() => $('#qr-result-text-buku').html(
-                            '<small class="text-success">Ready Scan..</small>'), 1600);
-                    },
-                    // (error) => console.warn(error)
-                ).catch(err => console.error("Error starting book camera:", err));
+                    facingMode: cameraId
+                }, {
+                    fps: 10,
+                    qrbox: 250
+                }, (decodedText) => {
+                    handleScan(decodedText, 'buku');
+                    $('#qr-result-text-buku').text(decodedText);
+                    setTimeout(() => $('#qr-result-text-buku').html(
+                        '<small class="text-success">Ready Scan..</small>'), 1600);
+                }).catch(err => console.error("Error starting book camera:", err));
             }
 
             function stopCameraSiswa() {
@@ -485,7 +620,7 @@
                     $('#machineModalBuku').modal('hide');
                     return;
                 }
-                $('#mesinInputBuku').focus();
+                bookInput.focus();
             });
 
             $('#mesinInputBuku').on('keypress', function(e) {
@@ -494,6 +629,7 @@
                     if (code) {
                         handleScan(code, 'buku');
                         $(this).val('');
+                        suggestionsContainer.hide().empty();
                     }
                 }
             });
@@ -522,33 +658,24 @@
                             $('#machineModalSiswa').modal('hide');
                             $('#cameraModalSiswa').modal('hide');
                             $('#restart-section').show();
-                        } else if (response.type === 'buku' && !scannedData.buku.some(b => b.id === response.data.id)) {
-                            if (response.settings.batas_jumlah_buku_status === "aktif" &&
-                                scannedData.buku.length + 1 > response.settings.batas_jumlah_buku) {
-                                document.getElementById('errorSound').play();
-                                Toast.fire({
-                                    icon: 'warning',
-                                    title: `Maksimum ${response.settings.batas_jumlah_buku} buku dapat dipinjam.`
-                                });
-                                $('#cameraModalBuku').modal('hide');
-                                $('#machineModalBuku').modal('hide');
-                                stopCameraBuku();
-                                return;
-                            }
-                            scannedData.buku.push(response.data);
+                        } else if (response.type === 'buku' && !scannedData.buku) {
+                            scannedData.buku = response.data;
                             document.getElementById('successSound').play();
                             updateBookDetails();
-                            $('#mesinInputBuku').val('').focus();
+                            bookInput.val('').focus();
+                            $('#machineModalBuku').modal('hide');
+                            $('#cameraModalBuku').modal('hide');
+                            stopCameraBuku();
                             Toast.fire({
                                 icon: 'success',
                                 title: `Buku: ${response.data.judul_buku} berhasil discan`
                             });
                         } else {
-                            document.getElementById('successSound').play();
+                             document.getElementById('successSound').play();
                             Toast.fire({
                                 icon: 'warning',
                                 title: response.type === 'siswa' ? 'Siswa sudah discan.' :
-                                    'Buku ini sudah ditambahkan.'
+                                    'Buku sudah dipilih.'
                             });
                         }
                         checkSaveButton();
@@ -589,93 +716,72 @@
 
             function updateBookDetails() {
                 bookDetails.empty();
-                if (scannedData.buku.length > 0) {
-                    let tableContent = `
+                if (scannedData.buku) {
+                    bookDetails.append(`
                         <div class="list-group-item">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>No</th>
                                         <th>Buku</th>
                                         <th>Kode Buku</th>
-                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                    `;
-                    scannedData.buku.forEach((buku, index) => {
-                        tableContent += `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${buku.judul_buku}</td>
-                                <td>${buku.kode}</td>
-                                <td><i class="fa-solid fa-trash delete-book" data-id="${buku.id}"></i></td>
-                            </tr>
-                        `;
-                    });
-                    tableContent += `
+                                    <tr>
+                                        <td>${scannedData.buku.judul_buku}</td>
+                                        <td>${scannedData.buku.kode}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
-                    `;
-                    bookDetails.append(tableContent);
+                    `);
                 }
-                $('.delete-book').on('click', function() {
-                    const id = $(this).data('id');
-                    scannedData.buku = scannedData.buku.filter(b => b.id !== id);
-                    updateBookDetails();
-                    checkSaveButton();
-                });
             }
 
             function checkSaveButton() {
-                saveButton.prop('disabled', !scannedData.siswa || scannedData.buku.length === 0);
+                saveButton.prop('disabled', !scannedData.siswa || !scannedData.buku || !statusBuku.val());
             }
 
             saveButton.on('click', function() {
-                if (!scannedData.siswa || scannedData.buku.length === 0) return;
+                if (!scannedData.siswa || !scannedData.buku || !statusBuku.val()) return;
                 saveButton.prop('disabled', true).text('Menyimpan...');
                 $.ajax({
-                    url: "{{ url('admin/peminjaman/peminjaman-siswa/store') }}",
+                    url: "{{ url('admin/peminjaman/buku-rusak-hilang') }}",
                     type: 'POST',
                     data: {
                         nik_siswa: scannedData.siswa.nik,
-                        buku: scannedData.buku.map(b => b.id),
-                        tanggal_pinjam: "{{ date('Y-m-d') }}",
-                        tanggal_jatuh_tempo: calculateDueDate(),
-                        status_peminjaman: 'dipinjam',
+                        id_qr: scannedData.buku.id,
+                        sanksi: sanksiInput.val(),
+                        status_buku: statusBuku.val(),
+                        status_sanksi: 'belum_selesai',
+                        tanggal_laporan: $('#tanggal_laporan').val(),
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(response) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Sukses',
-                            text: response.message,
+                            text: response.message || 'Laporan berhasil disimpan',
                             confirmButtonText: 'OK'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location.href = "{{ url('admin/peminjaman/peminjaman-siswa/result') }}" + "?grup=" + response.grup;
+                                window.location.href =
+                                    "{{ url('admin/peminjaman/buku-rusak-hilang') }}";
                             }
                         });
                     },
                     error: function(err) {
                         Toast.fire({
                             icon: 'error',
-                            title: err.responseJSON?.error || 'Unknown error'
+                            title: err.responseJSON?.message || 'Unknown error'
                         });
-                        saveButton.prop('disabled', false).text('Simpan Pinjaman');
+                        saveButton.prop('disabled', false).text('Simpan Laporan');
                     },
                     complete: function() {
-                        if (window.location.pathname.includes('peminjaman-siswa')) {
-                            saveButton.prop('disabled', false).text('Simpan Pinjaman');
-                        }
+                        saveButton.prop('disabled', false).text('Simpan Laporan');
                     }
                 });
             });
-
-            function calculateDueDate() {
-                return "{{ date('Y-m-d', strtotime('+7 days')) }}";
-            }
         });
     </script>
 @endsection

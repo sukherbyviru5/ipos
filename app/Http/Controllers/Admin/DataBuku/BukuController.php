@@ -159,23 +159,31 @@ class BukuController extends Controller
 
         $buku = Buku::create($data);
 
-        $maxNoUrut = QrBuku::max('no_urut') ?? 0; 
-        for ($i = 1; $i <= $request->stok_buku; $i++) {
-            $noUrut = $maxNoUrut + $i; 
-            $code = Buku::generateKodeBuku(
-                $request->id_ddc,
-                $request->id_kategori,
-                strtolower(str_replace(' ', '-', $request->penerbit_buku ?? auth()->user()->nama)),
-                strtoupper(str_replace(' ', '', $request->singkatan_buku ?? $request->judul_buku)),
-                $noUrut
-            );
-            QrBuku::create([
-                'id_buku' => $buku->id,
-                'no_urut' => $noUrut,
-                'kode' => $code,
-                'path_qr' => null,
-            ]);
+        $currentQrs = QrBuku::where('id_buku', $buku->id)->get();
+
+        if ($request->stok_buku > count($currentQrs)) {
+            for ($i = count($currentQrs) + 1; $i <= $request->stok_buku; $i++) {
+                $code = Buku::generateKodeBuku(
+                    $request->id_ddc,
+                    $request->id_kategori,
+                    strtolower(str_replace(' ', '-', $request->penerbit_buku ?? auth()->user()->nama)),
+                    strtoupper(str_replace(' ', '', $request->singkatan_buku ?? $request->judul_buku)),
+                    $i
+                );
+                QrBuku::create([
+                    'id_buku' => $buku->id,
+                    'no_urut' => $i,
+                    'kode' => $code,
+                    'path_qr' => null,  
+                ]);
+            }
+        } elseif ($request->stok_buku < count($currentQrs)) {
+            $extraQrs = $currentQrs->slice($request->stok_buku);
+            foreach ($extraQrs as $qr) {
+                $qr->delete();
+            }
         }
+
 
         return redirect('/admin/data-buku')->with('message', 'Buku berhasil ditambahkan!');
     }
@@ -281,8 +289,7 @@ class BukuController extends Controller
                     'path_qr' => null,  
                 ]);
             }
-        }
-        elseif ($request->stok_buku < count($currentQrs)) {
+        } elseif ($request->stok_buku < count($currentQrs)) {
             $extraQrs = $currentQrs->slice($request->stok_buku);
             foreach ($extraQrs as $qr) {
                 $qr->delete();

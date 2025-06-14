@@ -21,19 +21,17 @@ class BukuImport implements ToModel, WithHeadingRow
      */
     public function model(array $row)
     {
-        // Map Excel headers to expected keys (case-insensitive)
         $mappedRow = array_change_key_case($row);
 
-        // Check if the row is completely empty
         $isEmpty = empty(array_filter($mappedRow, function ($value) {
             return $value !== null && $value !== '';
         }));
 
         if ($isEmpty) {
-            return null; // Skip the row if all fields are empty or null
+            return null; 
         }
 
-        // Validation rules based on the store method
+
         $validator = Validator::make($mappedRow, [
             'ddc' => 'required',
             'kategori_buku' => 'required',
@@ -143,23 +141,31 @@ class BukuImport implements ToModel, WithHeadingRow
             throw new Exception('Gagal menyimpan data buku');
         }
 
-        // Generate QR codes based on stok_buku
-        for ($i = 1; $i <= $mappedRow['stok_buku']; $i++) {
-            $code = Buku::generateKodeBuku(
-                $ddc->id,
-                $kategori->id,
-                strtolower(str_replace(' ', '-', $mappedRow['penerbit_buku'] ?? auth()->user()->nama ?? '')),
-                strtoupper(str_replace(' ', '', $mappedRow['singkatan_buku'] ?? $mappedRow['judul_buku'])),
-                $i
-            );
-            $qr = QrBuku::create([
-                'id_buku' => $buku->id,
-                'no_urut' => $i,
-                'kode' => $code,
-                'path_qr' => null,
-            ]);
-        }
+        $currentQrs = QrBuku::where('id_buku', $buku->id)->get();
 
+        if ($mappedRow['stok_buku'] > count($currentQrs)) {
+            for ($i = count($currentQrs) + 1; $i <= $mappedRow['stok_buku']; $i++) {
+                $code = Buku::generateKodeBuku(
+                    $ddc->id,
+                    $kategori->id,
+                    strtolower(str_replace(' ', '-', $mappedRow['penerbit_buku'] ?? auth()->user()->nama ?? '')),
+                    strtoupper(str_replace(' ', '', $mappedRow['singkatan_buku'] ?? $mappedRow['judul_buku'])),
+                    $i
+                );
+                QrBuku::create([
+                    'id_buku' => $buku->id,
+                    'no_urut' => $i,
+                    'kode' => $code,
+                    'path_qr' => null,  
+                ]);
+            }
+        } elseif ($mappedRow['stok_buku'] < count($currentQrs)) {
+            $extraQrs = $currentQrs->slice($mappedRow['stok_buku']);
+            foreach ($extraQrs as $qr) {
+                $qr->delete();
+            }
+        }
+        
         return $buku;
     }
 }

@@ -24,6 +24,8 @@ class PeminjamanSiswa extends Model
     protected $fillable = [
         'nik_siswa',
         'id_qr',
+        'kode',
+        'grup',
         'tanggal_pinjam',
         'tanggal_jatuh_tempo',
         'tanggal_kembali',
@@ -60,5 +62,11 @@ class PeminjamanSiswa extends Model
     public function qrBuku()
     {
         return $this->belongsTo(QrBuku::class, 'id_qr', 'id');
+    }
+
+
+    public function denda()
+    {
+        return $this->hasOne(Denda::class, 'peminjaman_siswa_id');
     }
 }

@@ -22,9 +22,15 @@
                         </button>
                     </div>
                 @endif
-                @if (session()->has('error'))
+
+                @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session()->get('error') }}
+                        <strong>Terjadi kesalahan:</strong>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -188,9 +194,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="fas fa-calculator"></i></span>
                                 </div>
-                                <select name="perhitungan_denda" id="perhitungan_denda" class="form-control" required
-                                    {{ old('denda_telat_status', isset($setting) && $setting->denda_telat_status === 'aktif' ? 'aktif' : '') == 'non aktif' ? 'disabled' : '' }}>
-                                    <option value="">Pilih Perhitungan Denda</option>
+                                <select name="perhitungan_denda" id="perhitungan_denda" class="form-control" required>
                                     <option value="non aktif"
                                         {{ old('perhitungan_denda', isset($setting) ? $setting->perhitungan_denda : '') == 'non aktif' ? 'selected' : '' }}>
                                         Non Aktif</option>
@@ -298,19 +302,25 @@
             toggleNumberInput('#batas_perpanjangan_status', '.batas_perpanjangan_group', '#batas_perpanjangan');
             toggleNumberInput('#denda_telat_status', '.denda_telat_group', '#denda_telat');
 
-            // Set initial state
             $('#batas_jumlah_buku_status').trigger('change');
             $('#lama_peminjaman_status').trigger('change');
             $('#lama_perpanjangan_status').trigger('change');
             $('#batas_perpanjangan_status').trigger('change');
             $('#denda_telat_status').trigger('change');
 
-            // Disable perhitungan_denda if denda_telat_status is non aktif
             $('#denda_telat_status').on('change', function() {
-                if (!$(this).is(':checked')) {
-                    $('#perhitungan_denda').val('non aktif').prop('disabled', true);
+                const $select = $('#perhitungan_denda');
+                const $options = $select.find('option');
+
+                if ($(this).is(':checked')) {
+                    $options.prop('disabled', false);
                 } else {
-                    $('#perhitungan_denda').prop('disabled', false);
+                    $select.val('non aktif');
+                    $options.each(function() {
+                        if ($(this).val() !== 'non aktif') {
+                            $(this).prop('disabled', true);
+                        }
+                    });
                 }
             }).trigger('change');
         });

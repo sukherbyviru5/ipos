@@ -151,6 +151,16 @@
                         'url' => 'admin/peminjaman/peminjaman-siswa',
                         'page' => 'Peminjaman Siswa',
                     ],
+                    [
+                        'title' => 'Pengembalian Siswa',
+                        'url' => 'admin/peminjaman/pengembalian-siswa',
+                        'page' => 'Pengembalian Siswa',
+                    ],
+                    [
+                        'title' => 'Buku Rusak/Hilang',
+                        'url' => 'admin/peminjaman/buku-rusak-hilang',
+                        'page' => 'Buku Rusak/Hilang',
+                    ],
                 ];
                 $pages = array_column($menuPeminjaman, 'page');
             @endphp

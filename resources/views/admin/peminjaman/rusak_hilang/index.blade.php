@@ -1,18 +1,18 @@
 @extends('master')
-@section('title', 'Peminjaman Siswa')
+@section('title', 'Data Buku Rusak/Hilang - ')
 @section('content')
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Peminjaman Siswa</h1>
+                <h1>Data Buku Rusak/Hilang</h1>
                 <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item">Peminjaman Siswa</div>
+                    <div class="breadcrumb-item">Data Buku Rusak/Hilang</div>
                 </div>
             </div>
 
             <div class="section-body">
-                <h2 class="section-title">Peminjaman Siswa</h2>
-                <p class="section-lead">Berikut adalah daftar peminjaman buku siswa terbaru.</p>
+                <h2 class="section-title">Data Buku Rusak/Hilang</h2>
+                <p class="section-lead">Berikut adalah data buku yang rusak atau hilang.</p>
                 @if (session()->has('message'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session()->get('message') }}
@@ -23,27 +23,26 @@
                 @endif
                 <div class="card">
                     <div class="card-header">
-                        <h4>Peminjaman Siswa</h4>
+                        <h4>Data Buku Rusak/Hilang</h4>
                         <div class="card-header-form">
-                            <a href="/admin/peminjaman/peminjaman-siswa/create" 
-                                class="btn btn-primary btn-sm">Buat Pinjaman Baru</a>
+                            <a href="/admin/peminjaman/buku-rusak-hilang/create" class="btn btn-primary btn-sm">
+                                Tambah Data
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <table class="table table-striped" id="peminjamanSiswaTable">
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
                                     <th width="10px">#</th>
-                                    <th>Nama Siswa</th>
                                     <th>Kode Buku</th>
-                                    <th>Tgl Pinjam</th>
-                                    <th>Tgl Jatuh Tempo</th>
-                                    <th>Status</th>
-                                    <th width="10px">Action</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Status Sanksi</th>
+                                    <th>Tanggal Laporan</th>
+                                    <th width="100px">Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -53,35 +52,37 @@
 
     <script>
         $(document).ready(function() {
-            $('#peminjamanSiswaTable').DataTable({
+            // Initialize DataTable
+            $('.table').DataTable({
                 responsive: true,
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('admin/peminjaman/peminjaman-siswa/all') }}",
+                    url: "{{ url('admin/peminjaman/buku-rusak-hilang/all') }}",
                     type: "GET"
                 },
                 columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                    { data: 'siswa.nama_siswa', name: 'siswa.nama_siswa' },
-                    { data: 'buku', name: 'buku' },
-                    { data: 'tgl_pinjam', name: 'tgl_pinjam' },
-                    { data: 'tgl_jatuh_tempo', name: 'tgl_jatuh_tempo' },
-                    { data: 'status_peminjaman', name: 'status_peminjaman' },
-                    { data: 'action', name: 'action', orderable: false, searchable: false }
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                    { data: 'kode_qr', name: 'kode_qr' },
+                    { data: 'siswa_nama', name: 'siswa_nama' },
+                    { data: 'status_sanksi', name: 'status_sanksi' },
+                    { data: 'tanggal_laporan', name: 'tanggal_laporan' },
+                    { data: 'action', name: 'action' }
                 ]
             });
 
-            $('#peminjamanSiswaTable').on('click', '.hapus[data-id]', function(e) {
+            
+
+            // Delete button click
+            $('.table').on('click', '.hapus[data-id]', function(e) {
                 e.preventDefault();
                 swal({
-                    title: "Hapus Peminjaman?",
-                    text: "Data peminjaman akan dihapus dan tidak dapat dikembalikan.",
+                    title: "Hapus Data Buku Rusak/Hilang?",
+                    text: "Data akan dihapus secara permanen!",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
-                })
-                .then((willDelete) => {
+                }).then((willDelete) => {
                     if (willDelete) {
                         $.ajax({
                             data: {
@@ -89,7 +90,7 @@
                                 _token: "{{ csrf_token() }}"
                             },
                             type: 'DELETE',
-                            url: "{{ url('admin/peminjaman/peminjaman-siswa') }}",
+                            url: "{{ url('admin/peminjaman/buku-rusak-hilang') }}",
                             beforeSend: function() {
                                 $.LoadingOverlay("show", {
                                     image: "",
@@ -100,10 +101,9 @@
                                 $.LoadingOverlay("hide");
                             },
                             success: function(data) {
-                                swal(data.message)
-                                    .then((result) => {
-                                        location.reload();
-                                    });
+                                swal(data.message).then(() => {
+                                    location.reload();
+                                });
                             },
                             error: function(err) {
                                 alert('Error: ' + err.responseText);

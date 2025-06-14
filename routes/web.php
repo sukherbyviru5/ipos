@@ -21,8 +21,10 @@ use App\Http\Controllers\Admin\DataBuku\DdcBukuController as DdcBukuAdmin;
 use App\Http\Controllers\Admin\DataBuku\JenisBukuController as JenisBukuAdmin;
 
 // manage peminjaman
-use App\Http\Controllers\Admin\Peminjaman\PeminjamanSiswaController as PeminjamanSiswaAdmin;
 use App\Http\Controllers\Admin\Peminjaman\SettingPeminjamanController as SettingPeminjamanAdmin;
+use App\Http\Controllers\Admin\Peminjaman\PeminjamanSiswaController as PeminjamanSiswaAdmin;
+use App\Http\Controllers\Admin\Peminjaman\PengembalianSiswaController as PengembalianSiswaAdmin;
+use App\Http\Controllers\Admin\Peminjaman\BukuRusakHilangController as BukuRusakHilangAdmin;
 
 // manage publikasi
 use App\Http\Controllers\Admin\Publikasi\ArtikelController as ArtikelAdmin;
@@ -252,6 +254,8 @@ Route::prefix('admin')->middleware('admin')->group(function () {
                 Route::get('all', [PeminjamanSiswaAdmin::class, 'getall']);
                 // create
                 Route::get('create', [PeminjamanSiswaAdmin::class, 'create']);
+                // detail
+                Route::get('detail/{id}', [PeminjamanSiswaAdmin::class, 'detail']);
                 // store
                 Route::post('store', [PeminjamanSiswaAdmin::class, 'store']);
                 // Delete
@@ -260,8 +264,43 @@ Route::prefix('admin')->middleware('admin')->group(function () {
                 Route::post('/check-siswa', [PeminjamanSiswaAdmin::class, 'checkSiswa']);
                 // Check Scan Buku
                 Route::post('/check-buku', [PeminjamanSiswaAdmin::class, 'checkBuku']);
+                // result termal
+                Route::get('/result', [PeminjamanSiswaAdmin::class, 'result']);
+            });
+
+            // Pengembalian Siswa
+            Route::prefix('pengembalian-siswa')->group(function () {
+                // Index
+                Route::get('/', [PengembalianSiswaAdmin::class, 'index']);
+                // Get All
+                Route::get('all', [PengembalianSiswaAdmin::class, 'getall']);
+                // create
+                Route::get('detail/{nik}', [PengembalianSiswaAdmin::class, 'detailPeminjamanSiswa']);
+                // update
+                Route::post('update', [PengembalianSiswaAdmin::class, 'kembalikanBuku']);
+                // cek book
+                Route::post('check-buku', [PengembalianSiswaAdmin::class, 'checkBuku']);
             });
            
+            // rusak atau hilang
+            Route::prefix('buku-rusak-hilang')->group(function () {
+                 // Index
+                Route::get('/', [BukuRusakHilangAdmin::class, 'index']);
+                // Create
+                Route::get('/create', [BukuRusakHilangAdmin::class, 'create']);
+                // Search
+                Route::get('/search', [BukuRusakHilangAdmin::class, 'search']);
+                // store
+                Route::post('/', [BukuRusakHilangAdmin::class, 'store']);
+                // Get All
+                Route::get('all', [BukuRusakHilangAdmin::class, 'getall']);
+                // Get
+                Route::get('edit/{id}', [BukuRusakHilangAdmin::class, 'edit']);
+                // Update
+                Route::put('update', [BukuRusakHilangAdmin::class, 'update']);
+                // Delete
+                Route::delete('/', [BukuRusakHilangAdmin::class, 'delete']);
+            });
         });
 
         Route::prefix('publikasi')->group(function () {

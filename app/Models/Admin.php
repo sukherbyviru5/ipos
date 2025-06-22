@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Foundation\AdminFoundation as Authenticatable;;
+use App\Foundation\AdminFoundation as Authenticatable;
 
 class Admin extends Authenticatable
 {
@@ -21,5 +21,10 @@ class Admin extends Authenticatable
     static function getAdminByNipNikNisn($nip_nik_nisn)
     {
         return self::where('nip_nik_nisn', $nip_nik_nisn)->first();
+    }
+
+    static function getall()
+    {
+        return self::where('nip_nik_nisn', session('nip_nik_nisn'))->first();
     }
 }

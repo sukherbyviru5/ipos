@@ -15,5 +15,9 @@ class SettingApp extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    static function get() {
+        return static::first();
+    }
     
 }

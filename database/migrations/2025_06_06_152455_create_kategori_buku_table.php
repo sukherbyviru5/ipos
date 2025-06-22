@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('kategori_buku', function (Blueprint $table) {
             $table->id();
             $table->string('no_urut')->unique();
+            $table->string('image')->nullable();
             $table->string('nama_kategori');
             $table->timestamps();
         });

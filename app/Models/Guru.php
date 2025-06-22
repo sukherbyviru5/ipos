@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Foundation\GuruFoundation as Authenticatable;
 
-class Guru extends Model
+class Guru extends Authenticatable
 {
+    use HasFactory;
     protected $table = 'guru';
     protected $fillable = [
         'nik',
@@ -17,8 +19,7 @@ class Guru extends Model
         'qr_code',
         'status',
     ];
-    use HasFactory;
-
+    protected $hidden = ['password'];
 
     static function getSiswaById($id)
     {
@@ -31,5 +32,9 @@ class Guru extends Model
     static function getSiswaByNip($nip)
     {
         return self::where('nip', $nip)->first();
+    }
+     static function getall()
+    {
+        return self::where('nik', session('nip_nik_nisn'))->first();
     }
 }

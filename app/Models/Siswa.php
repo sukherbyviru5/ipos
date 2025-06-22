@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Foundation\SiswaFoundation as Authenticatable;
 
-class Siswa extends Model
+class Siswa extends Authenticatable
 {
+    use HasFactory;
     protected $table = 'siswa';
     protected $guarded = [];
-    use HasFactory;
+
+    protected $hidden = ['password'];
 
     public function kelas()
     {
@@ -27,5 +29,9 @@ class Siswa extends Model
     static function getSiswaByNisn($nisn)
     {
         return self::where('nisn', $nisn)->first();
+    }
+    static function getall()
+    {
+        return self::where('nik', session('nip_nik_nisn'))->with(['kelas'])->first();
     }
 }

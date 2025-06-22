@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Models\PeminjamanSiswa;
 use App\Models\SettingPeminjaman;
+use App\Models\TransaksiKeuangan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -36,6 +37,7 @@ class PengembalianSiswaController extends Controller
         $query = PeminjamanSiswa::with(['siswa', 'qrBuku.buku'])
             ->select('peminjaman_siswa.*')
             ->orderBy('tanggal_pinjam', 'DESC')
+            ->whereIn('status_peminjaman', ['dipinjam', 'telat', 'bermasalah'])
             ->get();
 
         foreach ($query as $item) {
@@ -46,7 +48,7 @@ class PengembalianSiswaController extends Controller
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('buku', function (PeminjamanSiswa $peminjaman) {
-                return '<a href="' . url('/admin/data-buku/detail/' . $peminjaman->qrBuku->buku->id) . '" target="_blank">' . e($peminjaman->qrBuku->kode ?? '-') . '</a>';
+                return '<a href="' . url('/admin/data-buku/detail/' . $peminjaman->qrBuku->buku->id . '?u=' . $peminjaman->qrBuku->no_urut) . '" target="_blank">' . e($peminjaman->qrBuku->kode ?? '-') . '</a>';
             })
             ->addColumn('status_peminjaman', function (PeminjamanSiswa $peminjaman) {
                 $badgeClass = 'badge-secondary';
@@ -136,7 +138,6 @@ class PengembalianSiswaController extends Controller
             'status_peminjaman' => 'required|in:dikembalikan',
             'is_denda_paid' => 'nullable',
         ]);
-        Log::info("denda", $request->all());
 
         $peminjaman = PeminjamanSiswa::with('denda')->findOrFail($request->peminjaman_id);
 
@@ -158,6 +159,13 @@ class PengembalianSiswaController extends Controller
             $peminjaman->denda->status_denda = $request->is_denda_paid ? 'lunas' : 'belum_lunas';
             if ($request->is_denda_paid) {
                 $peminjaman->denda->tanggal_pembayaran = Carbon::today();
+                TransaksiKeuangan::create([
+                    'uraian' => $peminjaman->siswa->nama_siswa .' Telah Membayar '. $peminjaman->denda->keterangan,
+                    'nominal' => $peminjaman->denda->jumlah_denda,
+                    'type' => 'debit',
+                    'sumber' => 'denda',
+                    'tanggal' => Carbon::today(),
+                ]);
             }
             $peminjaman->denda->save();
         }

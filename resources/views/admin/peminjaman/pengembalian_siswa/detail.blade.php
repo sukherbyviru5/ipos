@@ -53,7 +53,7 @@
                                         </tr>
                                         <tr>
                                             <th>Kelas</th>
-                                            <td>: {{ $siswa->kelas->nama_kelas ?? 'N/A' }}</td>
+                                            <td>: {{ $siswa->kelas->tingkat_kelas . ' ' . $siswa->kelas->kelompok . ' ( ' . $siswa->kelas->urusan_kelas . ' ) ( Jurusan ' . $siswa->kelas->jurusan . ' )' ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <th>Status</th>

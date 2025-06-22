@@ -48,6 +48,9 @@
                         </div>
 
                         <div class="form-group text-right">
+                            <a href="/" class="btn btn-danger btn-lg btn-icon icon-right">
+                                Kembali
+                            </a>
                             <button type="submit" class="btn btn-primary btn-lg btn-icon icon-right" tabindex="4">
                                 Masuk
                                 <i class="fas fa-sign-in-alt"></i>

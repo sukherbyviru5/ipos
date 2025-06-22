@@ -138,6 +138,11 @@
                     <span>QR Code Buku</span>
                 </a>
             </li>
+            <li {{ $sb == 'Buku Rusak/Hilang' ? 'class=active' : '' }}>
+                <a class="nav-link" href="{{ url('admin/peminjaman/buku-rusak-hilang') }}"><i class="fas fa-book-dead"></i>
+                    <span>Buku Rusak/Hilang</span>
+                </a>
+            </li>
             <li class="menu-header">PEMINJAMAN BUKU SISWA</li>
             @php
                 $menuPeminjaman = [
@@ -156,11 +161,7 @@
                         'url' => 'admin/peminjaman/pengembalian-siswa',
                         'page' => 'Pengembalian Siswa',
                     ],
-                    [
-                        'title' => 'Buku Rusak/Hilang',
-                        'url' => 'admin/peminjaman/buku-rusak-hilang',
-                        'page' => 'Buku Rusak/Hilang',
-                    ],
+                  
                 ];
                 $pages = array_column($menuPeminjaman, 'page');
             @endphp
@@ -168,7 +169,39 @@
             <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
                     <i class="fas fa-book-reader"></i>
-                    <span>Peminjaman Buku</span>
+                    <span>Peminjaman Siswa</span>
+                </a>
+                <ul class="dropdown-menu">
+                    @foreach($menuPeminjaman as $menu)
+                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
+                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
+                        </li>
+                    @endforeach
+                </ul>
+            </li>
+
+            <li class="menu-header">PEMINJAMAN BUKU GURU</li>
+            @php
+                $menuPeminjaman = [
+                    [
+                        'title' => 'Peminjaman Guru',
+                        'url' => 'admin/peminjaman/peminjaman-guru',
+                        'page' => 'Peminjaman Guru',
+                    ],
+                    [
+                        'title' => 'Pengembalian Guru',
+                        'url' => 'admin/peminjaman/pengembalian-guru',
+                        'page' => 'Pengembalian Guru',
+                    ],
+                    
+                ];
+                $pages = array_column($menuPeminjaman, 'page');
+            @endphp
+
+            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-book-reader"></i>
+                    <span>Peminjaman Guru</span>
                 </a>
                 <ul class="dropdown-menu">
                     @foreach($menuPeminjaman as $menu)
@@ -180,6 +213,53 @@
             </li>
             
            {{-- --------------------------- stack cuy yang peminjaman dan pengembalian-------------------------------}}
+
+           <li class="menu-header">LAPORAN LAPORAN</li>
+            @php
+                $menuLaporan = [
+                    [
+                        'title' => 'Transaksi Keuangan',
+                        'url' => 'admin/laporan/transaksi-keuangan',
+                        'page' => 'Transaksi Keuangan',
+                    ],
+                    [
+                        'title' => 'Data Buku',
+                        'url' => 'admin/laporan/buku',
+                        'page' => 'Laporan Data Buku',
+                    ],
+                    [
+                        'title' => 'Peminjaman/Pengembalian',
+                        'url' => 'admin/laporan/peminjaman-pengembalian',
+                        'page' => 'Laporan Peminjaman/Pengembalian',
+                    ],
+                    [
+                        'title' => 'Pengunjung',
+                        'url' => 'admin/laporan/pengunjung',
+                        'page' => 'Laporan Pengunjung',
+                    ],
+                    [
+                        'title' => 'Aktifitas Siswa',
+                        'url' => 'admin/laporan/log-siswa',
+                        'page' => 'Laporan Aktifitas Siswa',
+                    ],
+                ];
+                $pages = array_column($menuLaporan, 'page');
+            @endphp
+
+            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-file"></i>
+                    <span>Laporan</span>
+                </a>
+                <ul class="dropdown-menu">
+                    @foreach($menuLaporan as $menu)
+                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
+                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
+                        </li>
+                    @endforeach
+                </ul>
+            </li>
+
 
             <li class="menu-header">PUBLIKASI</li>
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Peminjaman;
 
+use App\Models\Guru;
+use App\Models\Siswa;
 use App\Models\QrBuku;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -83,11 +85,10 @@ class BukuRusakHilangController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('siswa_nama', function ($row) {
-                return $row->siswa ? $row->siswa->nama_siswa : '-';
-            })
-            ->addColumn('guru_nama', function ($row) {
-                return $row->guru ? $row->guru->nama_guru : '-';
+            ->addColumn('nama', function ($row) {
+                $role = $row->nik_siswa ? 'Siswa' : 'Guru';
+                $nama = $row->siswa ? $row->siswa->nama_siswa : ($row->guru ? $row->guru->nama_guru : '-');
+                return '<span class="text-decoration-underline" data-placement="top" title="' . $role . '">' . $nama . '</span>';
             })
             ->addColumn('kode_qr', function ($row) {
                 return $row->qrBuku ? $row->qrBuku->kode : '-';
@@ -102,7 +103,7 @@ class BukuRusakHilangController extends Controller
                     $badgeClass = 'badge-danger';
                 }
 
-                return '<span class="badge ' . $badgeClass . '">' . Str::replace('_', ' ', ucfirst($status))  . '</span>';
+                return '<span class="badge ' . $badgeClass . '">' . Str::replace('_', ' ', ucfirst($status)) . '</span>';
             })
             ->addColumn('action', function (BukuRusakHilang $row) {
                 return '
@@ -111,17 +112,13 @@ class BukuRusakHilangController extends Controller
                         Action
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item edit" href="/admin/peminjaman/buku-rusak-hilang/edit/' .
-                    $row->id .
-                    '">Edit</a></li>
-                        <li><a data-id="' .
-                    $row->id .
-                    '" class="dropdown-item hapus" href="#">Hapus</a></li>
+                        <li><a class="dropdown-item edit" href="/admin/peminjaman/buku-rusak-hilang/edit/' . $row->id . '">Edit</a></li>
+                        <li><a data-id="' . $row->id . '" class="dropdown-item hapus" href="#">Hapus</a></li>
                     </ul>
                 </div>
                 ';
             })
-            ->rawColumns(['action', 'kode_qr', 'status_sanksi'])
+            ->rawColumns(['action', 'kode_qr', 'status_sanksi', 'nama'])
             ->make(true);
     }
 
@@ -186,6 +183,45 @@ class BukuRusakHilangController extends Controller
         );
     }
 
+
+    public function check(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:255',
+        ]);
+
+        $code = $request->code;
+
+        $guru = Guru::where('nik', $code)->first();
+        if ($guru) {
+            $data = [
+                'id' => $guru->id,
+                'nik' => $guru->nik,
+                'nama_guru' => $guru->nama_guru, 
+                'nama_mata_pelajaran' => $guru->nama_mata_pelajaran ?? '-', 
+                'role' => 'guru',
+            ];
+            return response()->json(['type' => 'guru', 'data' => $data]);
+        }
+
+        $siswa = Siswa::where('nik', $code)->first();
+        if ($siswa) {
+            $kelas = $siswa->kelas ? 
+                "{$siswa->kelas->tingkat_kelas} {$siswa->kelas->kelompok} ({$siswa->kelas->urusan_kelas}) (Jurusan {$siswa->kelas->jurusan})" : 
+                '-';
+            $data = [
+                'id' => $siswa->id,
+                'nik' => $siswa->nik,
+                'nama_siswa' => $siswa->nama_siswa,
+                'kelas' => $kelas, 
+                'role' => 'siswa', 
+            ];
+            return response()->json(['type' => 'siswa', 'data' => $data]);
+        }
+
+        return response()->json(['error' => 'Kode tidak ditemukan'], 404);
+    }
+    
     public function delete(Request $request)
     {
         $request->validate([

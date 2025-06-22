@@ -23,6 +23,7 @@ class KategoriBuku extends Model
      */
     protected $fillable = [
         'no_urut',
+        'image',
         'nama_kategori',
     ];
 

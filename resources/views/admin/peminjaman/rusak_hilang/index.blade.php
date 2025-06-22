@@ -36,7 +36,7 @@
                                 <tr>
                                     <th width="10px">#</th>
                                     <th>Kode Buku</th>
-                                    <th>Nama Siswa</th>
+                                    <th>Nama</th>
                                     <th>Status Sanksi</th>
                                     <th>Tanggal Laporan</th>
                                     <th width="100px">Action</th>
@@ -50,6 +50,66 @@
         </section>
     </div>
 
+    <style>
+        .text-decoration-underline {
+            position: relative;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .text-decoration-underline::after {
+            content: attr(title);
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2d3748;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.4;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 1000;
+        }
+
+        .text-decoration-underline::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #2d3748;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .text-decoration-underline:hover::after,
+        .text-decoration-underline:hover::before {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .text-decoration-underline::after {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+        }
+
+        .text-decoration-underline[data-placement="top"]::after {
+            max-width: 80vw;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    </style>
+
     <script>
         $(document).ready(function() {
             // Initialize DataTable
@@ -61,17 +121,34 @@
                     url: "{{ url('admin/peminjaman/buku-rusak-hilang/all') }}",
                     type: "GET"
                 },
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                    { data: 'kode_qr', name: 'kode_qr' },
-                    { data: 'siswa_nama', name: 'siswa_nama' },
-                    { data: 'status_sanksi', name: 'status_sanksi' },
-                    { data: 'tanggal_laporan', name: 'tanggal_laporan' },
-                    { data: 'action', name: 'action' }
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex'
+                    },
+                    {
+                        data: 'kode_qr',
+                        name: 'kode_qr'
+                    },
+                    {
+                        data: 'nama',
+                        name: 'nama'
+                    },
+                    {
+                        data: 'status_sanksi',
+                        name: 'status_sanksi'
+                    },
+                    {
+                        data: 'tanggal_laporan',
+                        name: 'tanggal_laporan'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action'
+                    }
                 ]
             });
 
-            
+
 
             // Delete button click
             $('.table').on('click', '.hapus[data-id]', function(e) {

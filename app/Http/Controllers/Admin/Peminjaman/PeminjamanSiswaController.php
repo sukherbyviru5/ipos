@@ -170,8 +170,7 @@ class PeminjamanSiswaController extends Controller
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('buku', function (PeminjamanSiswa $peminjaman) {
-                    return '<a href="' . url('/admin/data-buku/detail/' . $peminjaman->qrBuku->buku->id) . '" target="_blank">'
-                        . e($peminjaman->qrBuku->kode ?? '-') . '</a>';
+                return '<a href="' . url('/admin/data-buku/detail/' . $peminjaman->qrBuku->buku->id . '?u=' . $peminjaman->qrBuku->no_urut) . '" target="_blank">' . e($peminjaman->qrBuku->kode ?? '-') . '</a>';
             })
             ->addColumn('status_peminjaman', function (PeminjamanSiswa $peminjaman) {
                 $badgeClass = 'badge-secondary'; 

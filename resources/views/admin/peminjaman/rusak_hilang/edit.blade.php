@@ -24,10 +24,11 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <div class="section-title">Data Siswa</div>
+                                    <div class="section-title">Data Member</div>
                                 </div>
                                 <div class="row">
-                                    <!-- Profil -->
+                                    @if ($edit->nik_siswa)
+                                          <!-- Profil -->
                                     <div class="col-md-4 text-center">
                                         @if ($edit?->siswa?->foto)
                                             <img src="{{ asset($edit?->siswa?->foto) }}" alt="profil" class="img-fluid mb-3" style="max-width: 100%; height: auto; border: 1px solid #ddd; padding: 5px;">
@@ -60,6 +61,34 @@
                                             </table>
                                         </div>
                                     </div>
+                                    @else
+                                    <!-- Detail Guru -->
+                                    <div class="col-md-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                    <tr>
+                                                        <th>Nama Guru</th>
+                                                        <td>{{ $edit?->guru?->nama_guru }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>NIK</th>
+                                                        <td>{{ $edit?->guru?->nik }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>NIP</th>
+                                                        <td>{{ $edit?->guru?->nip ?? 'N/A' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Mapel</th>
+                                                        <td>{{ $edit?->guru?->nama_mata_pelajaran }} </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    @endif
+                                  
                                 </div>
                             </div>
                             <div class="col-md-6">

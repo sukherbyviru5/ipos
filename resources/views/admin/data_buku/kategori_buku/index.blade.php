@@ -68,7 +68,7 @@
                     </button>
                 </div>
                 <form action="{{ url('admin/data-buku/kategori-buku') }}" method="POST" class="needs-validation"
-                    novalidate="">
+                    novalidate="" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
@@ -85,6 +85,14 @@
                                 required="">
                             <div class="invalid-feedback">
                                 Masukkan Kategori
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Logo/Icon</label>
+                            <input type="file" placeholder="Masukkan Logo/Icon" class="form-control" name="image"
+                                accept="image/*" required="">
+                            <div class="invalid-feedback">
+                                Masukkan Logo/Icon
                             </div>
                         </div>
                     </div>
@@ -106,7 +114,7 @@
                     </button>
                 </div>
                 <form action="{{ url('admin/data-buku/kategori-buku/update') }}" method="POST" class="needs-validation"
-                    novalidate="">
+                    novalidate="" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="id" id="id">
                     <div class="modal-body">
@@ -124,6 +132,14 @@
                                 name="nama_kategori" id="nama_kategori" required="">
                             <div class="invalid-feedback">
                                 Masukkan Kategori
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Logo/Icon</label>
+                            <input type="file" placeholder="Masukkan Logo/Icon"  class="form-control" name="image"
+                                accept="image/*">
+                            <div class="invalid-feedback">
+                                Masukkan Logo/Icon
                             </div>
                         </div>
                     </div>
@@ -272,11 +288,9 @@
                     });
             });
 
-            // New AJAX handler for form import submission
             $('#formImport').on('submit', function(e) {
-                e.preventDefault(); // Prevent default form submission
+                e.preventDefault(); 
 
-                // Create FormData object to handle file upload
                 let formData = new FormData(this);
 
                 $.ajax({

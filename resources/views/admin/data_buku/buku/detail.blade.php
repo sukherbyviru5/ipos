@@ -42,7 +42,7 @@
                                         <tbody>
                                             <tr>
                                                 <th>Kode Buku</th>
-                                                <td>{{ $buku->kode_buku }}</td>
+                                                <td>{{ request('u') ? $buku->kode_buku . request('u') : $buku->kode_buku }}</td>
                                             </tr>
                                             <tr>
                                                 <th>DDC</th>

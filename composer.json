@@ -5,12 +5,12 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^8.0.2",
-        "biscolab/laravel-recaptcha": "^5.4",
+        "php": "^8.2.0",
+        "biscolab/laravel-recaptcha": "^6.0",
         "guzzlehttp/guzzle": "^7.2",
         "kreait/firebase-php": "^7.18",
         "kreait/laravel-firebase": "^5.10",
-        "laravel/framework": "^9.19",
+        "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "maatwebsite/excel": "*",
@@ -18,7 +18,7 @@
         "psr/simple-cache": "^2.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/pdf-to-image": "^1.2",
-        "yajra/laravel-datatables-oracle": "~9.0",
+        "yajra/laravel-datatables-oracle": "^10.0", 
         "yaza/laravel-google-drive-storage": "^2.0"
     },
     "require-dev": {
@@ -28,7 +28,7 @@
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
         "psr-4": {

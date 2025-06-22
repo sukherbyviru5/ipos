@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin\DataBuku;
 
+use Exception;
 use App\Models\Buku;
 use App\Models\QrBuku;
 use App\Models\DdcBuku;
 use App\Models\JenisBuku;
+use App\Models\LembarBuku;
 use App\Imports\BukuImport;
 use App\Models\DriveGoogle;
 use App\Models\KondisiBuku;
@@ -16,6 +18,7 @@ use App\Helpers\QrCodeHelper;
 use App\Imports\DdcBukuImport;
 use App\Helpers\PdfToImageHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
@@ -247,29 +250,35 @@ class BukuController extends Controller
 
        
         if ($request->hasFile('ebook_file')) {
-            if ($buku->ebook_file && file_exists(public_path($buku->ebook_file))) {
-                unlink(public_path($buku->ebook_file));
+            try {
+                if ($buku->ebook_file && file_exists(public_path($buku->ebook_file))) {
+                    unlink(public_path($buku->ebook_file));
+                }
+
+                $file = $request->file('ebook_file');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('ebook_file'), $filename);
+                $filePath = 'ebook_file/' . $filename;
+                $data['ebook_file'] = $filePath;
+
+                $outputDir = public_path('ebook_images/');
+                $imagePaths = PdfToImageHelper::convertPdfToImages(public_path($filePath), $outputDir);
+
+                // Save each image to the lembar_buku table
+                foreach ($imagePaths as $index => $imagePath) {
+                    LembarBuku::create([
+                        'id_buku' => $buku->id,
+                        'no_urut' => $index + 1,
+                        'image' => str_replace(public_path(), '', $imagePath),
+                    ]);
+                }
+
+            } catch (Exception $e) {
+                Log::error('Failed to process e-book: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Failed to process e-book. Please try again.');
             }
-
-            $file = $request->file('ebook_file');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('ebook_file'), $filename);
-            $filePath = 'ebook_file/' . $filename;
-            $data['ebook_file'] = $filePath;
-
-            // $outputDir = public_path('ebook_images/');
-            // $imagePaths = PdfToImageHelper::convertPdfToImages(public_path($filePath), $outputDir);
-            // dd($imagePaths);
         }
 
-        
-        // if ($request->hasFile('ebook_file')) {
-        //     $file = $request->file('ebook_file');
-        //     $filename = time() . '_' . $request->nama . '_ijazah.' . $file->getClientOriginalExtension();
-        //     $drive = Gdrive::put('ebook_file/' . $filename, $request->file('ebook_file'));
-        //     dd($drive);
-        //     $drive_url = DriveGoogle::fileViews($filename, 'ijazah_guru');
-        // }
 
         $currentQrs = QrBuku::where('id_buku', $buku->id)->get();
 

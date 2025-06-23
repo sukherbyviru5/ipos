@@ -122,7 +122,7 @@ class BukuController extends Controller
             'lokasi_rak' => 'nullable|string|max:255',
             'cover_buku' => 'nullable|file|mimes:jpg,png,jpeg|max:2048',
             'ebook_tersedia' => 'boolean',
-            'ebook_file' => 'nullable|file|mimes:pdf|max:10000',
+            'ebook_file' => 'nullable|file|mimes:pdf|max:512000',
         ]);
 
         $data = $validated;
@@ -213,7 +213,7 @@ class BukuController extends Controller
             'lokasi_rak' => 'nullable|string|max:255',
             'cover_buku' => 'nullable|file|mimes:jpg,png,jpeg|max:2048',
             'ebook_tersedia' => 'boolean',
-            'ebook_file' => 'nullable|file|mimes:pdf|max:10000',
+            'ebook_file' => 'nullable|file|mimes:pdf|max:512000', 
         ]);
 
         $buku = Buku::findOrFail($id);
@@ -250,33 +250,26 @@ class BukuController extends Controller
 
        
         if ($request->hasFile('ebook_file')) {
-            try {
-                if ($buku->ebook_file && file_exists(public_path($buku->ebook_file))) {
-                    unlink(public_path($buku->ebook_file));
-                }
-
-                $file = $request->file('ebook_file');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('ebook_file'), $filename);
-                $filePath = 'ebook_file/' . $filename;
-                $data['ebook_file'] = $filePath;
-
-                $outputDir = public_path('ebook_images/');
-                $imagePaths = PdfToImageHelper::convertPdfToImages(public_path($filePath), $outputDir);
-
-                // Save each image to the lembar_buku table
-                foreach ($imagePaths as $index => $imagePath) {
-                    LembarBuku::create([
-                        'id_buku' => $buku->id,
-                        'no_urut' => $index + 1,
-                        'image' => str_replace(public_path(), '', $imagePath),
-                    ]);
-                }
-
-            } catch (Exception $e) {
-                Log::error('Failed to process e-book: ' . $e->getMessage());
-                return redirect()->back()->with('error', 'Failed to process e-book. Please try again.');
+            if ($buku->ebook_file && file_exists(public_path($buku->ebook_file))) {
+                unlink(public_path($buku->ebook_file));
             }
+
+            $file = $request->file('ebook_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('ebook_file'), $filename);
+            $filePath = 'ebook_file/' . $filename;
+            $data['ebook_file'] = $filePath;
+
+            // $outputDir = public_path('ebook_images/');
+            // $imagePaths = PdfToImageHelper::convertPdfToImages(public_path($filePath), $outputDir);
+
+            // foreach ($imagePaths as $index => $imagePath) {
+            //     LembarBuku::create([
+            //         'id_buku' => $buku->id,
+            //         'no_urut' => $index + 1,
+            //         'image' => str_replace(public_path(), '', $imagePath),
+            //     ]);
+            // }
         }
 
 

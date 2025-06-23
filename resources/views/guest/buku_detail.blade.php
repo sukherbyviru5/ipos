@@ -42,33 +42,28 @@
                                         <td style="font-size: 12px;">{{ $buku->singkatan_buku }}</td>
                                     </tr>
                                 @endif
-
                                 <tr>
                                     <td><code>Judul Buku</code></td>
                                     <td style="font-size: 12px;">{{ $buku->judul_buku }}</td>
                                 </tr>
-
                                 @if ($buku->penulis_buku)
                                     <tr>
                                         <td><code>Penulis</code></td>
                                         <td style="font-size: 12px;">{{ $buku->penulis_buku }}</td>
                                     </tr>
                                 @endif
-
                                 @if ($buku->penerbit_buku)
                                     <tr>
                                         <td><code>Penerbit</code></td>
                                         <td style="font-size: 12px;">{{ $buku->penerbit_buku }}</td>
                                     </tr>
                                 @endif
-
                                 @if ($buku->tahun_terbit)
                                     <tr>
                                         <td><code>Tahun Terbit</code></td>
                                         <td style="font-size: 12px;">{{ $buku->tahun_terbit }}</td>
                                     </tr>
                                 @endif
-
                                 @if ($buku->lokasi_lemari || $buku->lokasi_rak)
                                     <tr>
                                         <td><code>Lokasi Buku</code></td>
@@ -78,14 +73,13 @@
                                         </td>
                                     </tr>
                                 @endif
-
                                 <tr>
                                     <td><code>Ebook</code></td>
                                     <td style="font-size: 12px;">
                                         @if ($buku->ebook_tersedia)
                                             ✅ Tersedia
                                             @if ($buku->ebook_file)
-                                                - <a href="{{ asset($buku->ebook_file) }}" target="_blank">Baca / Unduh</a>
+                                                - <a href="{{ asset($buku->ebook_file) }}" target="_blank">Unduh</a>
                                             @endif
                                         @else
                                             ❌ Tidak tersedia
@@ -95,12 +89,10 @@
                             </table>
                         </div>
                     </div>
-
                     <p>
                         {!! $buku->sinopsis !!}
                     </p>
-
-                    @if ($buku->ebook_tersedia && $buku->ebook_file)
+                     @if ($buku->ebook_tersedia && $buku->ebook_file)
                         <iframe src="{{ asset($buku->ebook_file) }}" frameborder="0"
                             style="width:100%; height:600px;"></iframe>
                     @endif
@@ -156,5 +148,5 @@
         </div>
     </div>
 
-
+  
 @endsection

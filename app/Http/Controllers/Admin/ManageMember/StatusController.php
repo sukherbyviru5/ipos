@@ -17,12 +17,10 @@ class StatusController extends Controller
 
         $query = Siswa::query();
 
-        // Filter by kelas_id if provided and action is not alumni
         if ($kelas_id && $action !== 'alumni') {
             $query->where('id_kelas', $kelas_id);
         }
 
-        // Filter by status based on action
         if ($action === 'alumni') {
             $query->where('is_alumni', true);
             if ($request->has('tahun_kelulusan') && $request->tahun_kelulusan) {

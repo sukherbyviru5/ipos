@@ -64,7 +64,7 @@
                                 <tr>
                                     <th width="10px">#</th>
                                     <th>Nama</th>
-                                    <th>Kategori</th>
+                                    <th>Merk</th>
                                     <th>Harga</th>
                                     <th>Stok</th>
                                     <th>Foto</th>
@@ -101,15 +101,15 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Kategori</label>
+                            <label>Merk</label>
                             <select class="form-control" name="category_id" required>
-                                <option value="">Pilih Kategori</option>
+                                <option value="">Pilih Merk</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                Pilih Kategori
+                                Pilih Merk
                             </div>
                         </div>
                         <div class="form-group">
@@ -182,15 +182,15 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Kategori</label>
+                            <label>Merk</label>
                             <select class="form-control" name="category_id" required id="category_id">
-                                <option value="">Pilih Kategori</option>
+                                <option value="">Pilih Merk</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback">
-                                Pilih Kategori
+                                Pilih Merk
                             </div>
                         </div>
                         <div class="form-group">

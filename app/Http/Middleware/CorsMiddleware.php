@@ -19,7 +19,6 @@ class CorsMiddleware
     {
         $response = $next($request);
 
-        // Apply CORS headers only if the response is not a BinaryFileResponse
         if (!($response instanceof BinaryFileResponse)) {
             $response->header('Access-Control-Allow-Origin', '*')
                      ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')

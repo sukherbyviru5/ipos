@@ -8,18 +8,15 @@
         "php": "^8.2.0",
         "biscolab/laravel-recaptcha": "^6.0",
         "guzzlehttp/guzzle": "^7.2",
-        "kreait/firebase-php": "^7.18",
-        "kreait/laravel-firebase": "^5.10",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "maatwebsite/excel": "*",
+        "midtrans/midtrans-php": "^2.6",
         "phpoffice/phpspreadsheet": "^1.29",
         "psr/simple-cache": "^2.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "spatie/pdf-to-image": "^1.2",
-        "yajra/laravel-datatables-oracle": "^10.0", 
-        "yaza/laravel-google-drive-storage": "^2.0"
+        "yajra/laravel-datatables-oracle": "^10.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -37,7 +34,7 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/QrCodeHelper.php"
+            "app/Helpers/custom.php"
         ]
     },
     "autoload-dev": {

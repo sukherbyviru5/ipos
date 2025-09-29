@@ -6,21 +6,27 @@
 <meta translate="no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="description" content="@yield('meta_description', App\Models\SettingApp::first()->nama_madrasah ?? 'Perpustakaan Digital Parepare - Koleksi buku digital terlengkap untuk pembelajaran dan hiburan.')">
-<meta name="keywords" content="@yield('meta_keywords', App\Models\SettingApp::first()->nama_madrasah ?? 'perpustakaan digital, buku digital, parepare, pustaka buku, e-book, perpustakaan online')">
-<meta name="author" content="{{ App\Models\SettingApp::first()->nama_instansi ?? 'Perpustakaan Digital Parepare' }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<meta name="description" content="IPOS - Sistem Point of Sale modern dari PT Lunaray Cahya Nanjung untuk mempermudah penjualan, manajemen stok, dan laporan bisnis.">
+<meta name="keywords" content="ipos, point of sale, pos system, aplikasi kasir, manajemen stok, laporan penjualan, PT Lunaray Cahya Nanjung">
+<meta name="author" content="PT Lunaray Cahya Nanjung">
 <meta name="robots" content="index, follow">
-<meta property="og:title" content="@yield('title', App\Models\SettingApp::first()->nama_instansi ?? 'Perpustakaan Digital Parepare')">
-<meta property="og:description" content="@yield('meta_description', App\Models\SettingApp::first()->nama_madrasah ?? 'Perpustakaan Digital Parepare - Koleksi buku digital terlengkap untuk pembelajaran dan hiburan.')">
-<meta property="og:image" content="{{ asset(App\Models\SettingApp::first()->logo ?? 'mobile/dist/img/core-img/logo-small.png') }}">
+
+<meta property="og:title" content="IPOS - Point of Sale System | PT Lunaray Cahya Nanjung">
+<meta property="og:description" content="IPOS adalah sistem Point of Sale dari PT Lunaray Cahya Nanjung yang membantu bisnis mengelola penjualan, stok, dan laporan dengan mudah.">
+<meta property="og:image" content="{{ asset('assets/img/logo.png') }}">
 <meta property="og:url" content="{{ request()->fullUrl() }}">
+
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="@yield('title', App\Models\SettingApp::first()->nama_instansi ?? 'Perpustakaan Digital Parepare')">
-<meta name="twitter:description" content="@yield('meta_description', App\Models\SettingApp::first()->nama_madrasah ?? 'Perpustakaan Digital Parepare - Koleksi buku digital terlengkap untuk pembelajaran dan hiburan.')">
-<meta name="twitter:image" content="{{ asset(App\Models\SettingApp::first()->logo ?? 'mobile/dist/img/core-img/logo-small.png') }}">
-<title>@yield('title', App\Models\SettingApp::first()->nama_instansi ?? 'Perpustakaan Digital Parepare')</title>
-<link rel="icon" href="{{ asset(App\Models\SettingApp::first()->logo ?? 'mobile/dist/img/icons/icon-72x72.png') }}">
-<link rel="apple-touch-icon" href="{{ asset(App\Models\SettingApp::first()->logo ?? 'mobile/dist/img/icons/icon-96x96.png') }}">
-<link rel="apple-touch-icon" sizes="152x152" href="{{ asset(App\Models\SettingApp::first()->logo ?? 'mobile/dist/img/icons/icon-152x152.png') }}">
-<link rel="apple-touch-icon" sizes="167x167" href="{{ asset(App\Models\SettingApp::first()->logo ?? 'mobile/dist/img/icons/icon-167x167.png') }}">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ asset(App\Models\SettingApp::first()->logo ?? 'mobile/dist/img/icons/icon-180x180.png') }}">
+<meta name="twitter:title" content="IPOS - Point of Sale System | PT Lunaray Cahya Nanjung">
+<meta name="twitter:description" content="IPOS dari PT Lunaray Cahya Nanjung memudahkan penjualan, stok, dan laporan bisnis.">
+<meta name="twitter:image" content="{{ asset('assets/img/logo.png') }}">
+
+<title>IPOS - Point of Sale | PT Lunaray Cahya Nanjung</title>
+
+<link rel="icon" href="{{ asset('assets/img/logo.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('assets/img/logo.png') }}">
+<link rel="apple-touch-icon" sizes="152x152" href="{{ asset('assets/img/logo.png') }}">
+<link rel="apple-touch-icon" sizes="167x167" href="{{ asset('assets/img/logo.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/logo.png') }}">

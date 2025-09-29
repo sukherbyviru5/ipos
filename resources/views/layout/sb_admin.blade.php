@@ -2,14 +2,19 @@
 <nav class="navbar navbar-expand-lg main-navbar">
     <form class="form-inline mr-auto">
         <ul class="navbar-nav mr-3">
-            <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg"><i class="fas fa-bars"></i></a></li>
+            <li>
+                <a href="#" data-toggle="sidebar" class="nav-link nav-link-lg">
+                    <i class="fas fa-bars"></i>
+                </a>
+            </li>
         </ul>
     </form>
     <ul class="navbar-nav navbar-right">
-        <li class="dropdown"><a href="#" data-toggle="dropdown"
-                class="nav-link dropdown-toggle nav-link-lg nav-link-user">
+        <li class="dropdown">
+            <a href="#" data-toggle="dropdown"
+               class="nav-link dropdown-toggle nav-link-lg nav-link-user">
                 <img alt="image" src="{{ asset('assets/img/avatar.png') }}" class="rounded-circle mr-1">
-                <div class="d-sm-none d-lg-inline-block">Hi, {{ session()->get('nama') }}</div>
+                <div class="d-sm-none d-lg-inline-block">Hi, {{ Auth::user()->name }}</div>
             </a>
             <div class="dropdown-menu dropdown-menu-right">
                 <div class="dropdown-title">Tetap Semangat</div>
@@ -25,305 +30,52 @@
         </li>
     </ul>
 </nav>
+
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
-            <a href="#">ADMIN</a>
+            <a href="#">IPOS ADMIN</a>
         </div>
         <div class="sidebar-brand sidebar-brand-sm">
-            <a href="#">AD</a>
+            <a href="#">POS</a>
         </div>
         <ul class="sidebar-menu">
             <li class="menu-header">Dashboard</li>
             <li {{ $sb == 'Dashboard' ? 'class=active' : '' }}>
-                <a class="nav-link" href="{{ url('admin') }}"><i class="fas fa-fire"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="menu-header">ANGGOTA PERPUSTAKAAN</li>
-            @php
-                $menuAnggota = [
-                    [
-                        'title' => 'Kelas',
-                        'url' => 'admin/manage-member/kelas',
-                        'page' => 'Data Kelas'
-                    ],
-                    [
-                        'title' => 'Guru',
-                        'url' => 'admin/manage-member/guru',
-                        'page' => 'Data Guru'
-                    ],
-                    [
-                        'title' => 'Siswa',
-                        'url' => 'admin/manage-member/siswa',
-                        'page' => 'Data Siswa'
-                    ],
-                    [
-                        'title' => 'Kenaikan Kelas',
-                        'url' => 'admin/manage-member/kenaikan-kelas',
-                        'page' => 'Kenaikan Kelas'
-                    ],
-                    [
-                        'title' => 'Status Siswa',
-                        'url' => 'admin/manage-member/status-siswa',
-                        'page' => 'Status Siswa'
-                    ],
-                    
-                   
-                ];
-                $pages = array_column($menuAnggota, 'page');
-            @endphp
-
-            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-users"></i>
-                    <span>Manage Anggota</span>
-                </a>
-                <ul class="dropdown-menu">
-                    @foreach($menuAnggota as $menu)
-                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
-                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
-            </li>
-
-            <li class="menu-header">DATA BUKU</li>
-            @php
-                $menuBuku = [
-                    [
-                        'title' => 'Kategori Buku',
-                        'url' => 'admin/data-buku/kategori-buku',
-                        'page' => 'Kategori Buku'
-                    ],
-                    [
-                        'title' => 'DDC Buku',
-                        'url' => 'admin/data-buku/ddc-buku',
-                        'page' => 'DDC Buku'
-                    ],
-                    [
-                        'title' => 'Kondisi Buku',
-                        'url' => 'admin/data-buku/kondisi-buku',
-                        'page' => 'Kondisi Buku'
-                    ],
-                    [
-                        'title' => 'Jenis Buku',
-                        'url' => 'admin/data-buku/jenis-buku',
-                        'page' => 'Jenis Buku'
-                    ],
-                ];
-                $pages = array_column($menuBuku, 'page');
-            @endphp
-
-            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-book-reader"></i>
-                    <span>Manage Data Buku</span>
-                </a>
-                <ul class="dropdown-menu">
-                    @foreach($menuBuku as $menu)
-                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
-                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
-            </li>
-            <li {{ $sb == 'Data Buku' ? 'class=active' : '' }}>
-                <a class="nav-link" href="{{ url('admin/data-buku') }}"><i class="fas fa-book"></i>
-                    <span>Data Buku</span>
-                </a>
-            </li>
-            <li {{ $sb == 'QR Code Buku' ? 'class=active' : '' }}>
-                <a class="nav-link" href="{{ url('admin/data-buku/qr-buku') }}"><i class="fas fa-qrcode"></i>
-                    <span>QR Code Buku</span>
-                </a>
-            </li>
-            <li {{ $sb == 'Buku Rusak/Hilang' ? 'class=active' : '' }}>
-                <a class="nav-link" href="{{ url('admin/peminjaman/buku-rusak-hilang') }}"><i class="fas fa-book-dead"></i>
-                    <span>Buku Rusak/Hilang</span>
-                </a>
-            </li>
-            <li class="menu-header">PEMINJAMAN BUKU SISWA</li>
-            @php
-                $menuPeminjaman = [
-                    [
-                        'title' => 'Setting Peminjaman',
-                        'url' => 'admin/peminjaman/settings',
-                        'page' => 'Setting Peminjaman',
-                    ],
-                    [
-                        'title' => 'Peminjaman Siswa',
-                        'url' => 'admin/peminjaman/peminjaman-siswa',
-                        'page' => 'Peminjaman Siswa',
-                    ],
-                    [
-                        'title' => 'Pengembalian Siswa',
-                        'url' => 'admin/peminjaman/pengembalian-siswa',
-                        'page' => 'Pengembalian Siswa',
-                    ],
-                  
-                ];
-                $pages = array_column($menuPeminjaman, 'page');
-            @endphp
-
-            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-book-reader"></i>
-                    <span>Peminjaman Siswa</span>
-                </a>
-                <ul class="dropdown-menu">
-                    @foreach($menuPeminjaman as $menu)
-                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
-                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
-            </li>
-
-            <li class="menu-header">PEMINJAMAN BUKU GURU</li>
-            @php
-                $menuPeminjaman = [
-                    [
-                        'title' => 'Peminjaman Guru',
-                        'url' => 'admin/peminjaman/peminjaman-guru',
-                        'page' => 'Peminjaman Guru',
-                    ],
-                    [
-                        'title' => 'Pengembalian Guru',
-                        'url' => 'admin/peminjaman/pengembalian-guru',
-                        'page' => 'Pengembalian Guru',
-                    ],
-                    
-                ];
-                $pages = array_column($menuPeminjaman, 'page');
-            @endphp
-
-            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-book-reader"></i>
-                    <span>Peminjaman Guru</span>
-                </a>
-                <ul class="dropdown-menu">
-                    @foreach($menuPeminjaman as $menu)
-                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
-                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
-            </li>
-            
-           {{-- --------------------------- stack cuy yang peminjaman dan pengembalian-------------------------------}}
-
-           <li class="menu-header">LAPORAN LAPORAN</li>
-            @php
-                $menuLaporan = [
-                    [
-                        'title' => 'Transaksi Keuangan',
-                        'url' => 'admin/laporan/transaksi-keuangan',
-                        'page' => 'Transaksi Keuangan',
-                    ],
-                    [
-                        'title' => 'Data Buku',
-                        'url' => 'admin/laporan/buku',
-                        'page' => 'Laporan Data Buku',
-                    ],
-                    [
-                        'title' => 'Peminjaman/Pengembalian',
-                        'url' => 'admin/laporan/peminjaman-pengembalian',
-                        'page' => 'Laporan Peminjaman/Pengembalian',
-                    ],
-                    [
-                        'title' => 'Pengunjung',
-                        'url' => 'admin/laporan/pengunjung',
-                        'page' => 'Laporan Pengunjung',
-                    ],
-                    [
-                        'title' => 'Aktifitas Siswa',
-                        'url' => 'admin/laporan/log-siswa',
-                        'page' => 'Laporan Aktifitas Siswa',
-                    ],
-                ];
-                $pages = array_column($menuLaporan, 'page');
-            @endphp
-
-            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-file"></i>
-                    <span>Laporan</span>
-                </a>
-                <ul class="dropdown-menu">
-                    @foreach($menuLaporan as $menu)
-                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
-                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
-            </li>
-
-
-            <li class="menu-header">PUBLIKASI</li>
-
-            <li {{ $sb == 'Artikel' ? 'class=active' : '' }}>
-                <a class="nav-link" href="{{ url('admin/publikasi/artikel') }}"><i class="fas fa-newspaper"></i>
-                    <span>Artikel</span>
+                <a class="nav-link" href="{{ url('admin') }}">
+                    <i class="fas fa-fire"></i> <span>Dashboard</span>
                 </a>
             </li>
 
-            <li class="menu-header">SETTING APPS</li>
-            @php
-                $menuSettings = [
-                    [
-                        'title' => 'Banner',
-                        'url' => 'admin/setting/banner',
-                        'page' => 'Banner',
-                    ],
-                    [
-                        'title' => 'Video',
-                        'url' => 'admin/setting/video',
-                        'page' => 'Video',
-                    ],
-                    [
-                        'title' => 'Foto Kegiatan',
-                        'url' => 'admin/setting/foto',
-                        'page' => 'Foto Kegiatan',
-                    ],
-                    [
-                        'title' => 'Link',
-                        'url' => 'admin/setting/link',
-                        'page' => 'Link',
-                    ],
-                    [
-                        'title' => 'Profil Perpustakaan',
-                        'url' => 'admin/setting/profil_perpustakaan',
-                        'page' => 'Profil Perpustakaan',
-                    ],
-                    [
-                        'title' => 'Setting Apps',
-                        'url' => 'admin/setting/apps',
-                        'page' => 'Setting Apps',
-                    ],
-                    [
-                        'title' => 'Admin Accounts',
-                        'url' => 'admin/setting/admin',
-                        'page' => 'Admin Accounts',
-                    ],
-                ];
-                $pages = array_column($menuSettings, 'page');
-            @endphp
-
-            <li class="nav-item dropdown {{ in_array($sb, $pages) ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-cog"></i>
-                    <span>Setting</span>
+            <li class="menu-header">Master Data</li>
+            <li {{ $sb == 'Category' ? 'class=active' : '' }}>
+                <a class="nav-link" href="{{ url('admin/manage-master/categories') }}">
+                    <i class="fas fa-tags"></i> <span>Merk / Kategori</span>
                 </a>
-                <ul class="dropdown-menu">
-                    @foreach($menuSettings as $menu)
-                        <li {{ $sb == $menu['page'] ? 'class=active' : '' }}>
-                            <a class="nav-link" href="{{ url($menu['url']) }}">{{ $menu['title'] }}</a>
-                        </li>
-                    @endforeach
-                </ul>
+            </li>
+            <li {{ $sb == 'Product' ? 'class=active' : '' }}>
+                <a class="nav-link" href="{{ url('admin/manage-master/products') }}">
+                    <i class="fas fa-box"></i> <span>Produk</span>
+                </a>
+            </li>
+            <li {{ $sb == 'User' ? 'class=active' : '' }}>
+                <a class="nav-link" href="{{ url('admin/manage-master/users') }}">
+                    <i class="fas fa-users"></i> <span>User</span>
+                </a>
+            </li>
+
+            <li class="menu-header">Transaksi</li>
+            <li {{ $sb == 'Transaction' ? 'class=active' : '' }}>
+                <a class="nav-link" href="{{ url('admin/transactions') }}">
+                    <i class="fas fa-cash-register"></i> <span>Transaksi</span>
+                </a>
             </li>
         </ul>
+        <div class="hide-sidebar-mini mt-4 mb-4 p-3">
+            <a href="/"
+                class="btn btn-primary btn-lg btn-block btn-icon-split">
+                <i class="fas fa-rocket"></i> Back To Home
+            </a>
+        </div>
     </aside>
 </div>

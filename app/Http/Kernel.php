@@ -33,21 +33,8 @@ class Kernel extends HttpKernel
         'web' => [\App\Http\Middleware\EncryptCookies::class, \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class, \Illuminate\Session\Middleware\StartSession::class, \Illuminate\View\Middleware\ShareErrorsFromSession::class, \App\Http\Middleware\VerifyCsrfToken::class, \Illuminate\Routing\Middleware\SubstituteBindings::class],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ],
-        'admin' => [
-            'is_admin' => \App\Http\Middleware\IsAdmin::class,
-        ],
-        'guru' => [
-            'is_guru' => \App\Http\Middleware\IsGuru::class,
-        ],
-        'siswa' => [
-            'is_siswa' => \App\Http\Middleware\IsSiswa::class,
-        ],
-        'integrate' => [
-            'integrated' => \App\Http\Middleware\IntegrateMiddleware::class,
         ],
     ];
 
@@ -70,5 +57,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'cors' => \App\Http\Middleware\CorsMiddleware::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];
 }

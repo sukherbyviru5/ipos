@@ -1,15 +1,14 @@
 @extends('master')
-@section('title', '')
+@section('title', 'Login IPOS')
 @section('content')
     <section class="section">
         <div class="d-flex flex-wrap align-items-stretch">
             <div class="col-lg-4 col-md-12 col-12 order-lg-1 min-vh-100 order-2 bg-white">
                 <div class="p-4 m-3">
-                    <img src="{{ asset('assets/img/kemenag.png') }}" alt="logo" width="100"
-                        class="mb-5 mt-2">
-                    <h4 class="text-dark font-weight-normal">Selamat Datang di <span class="font-weight-bold">Aplikasi
-                            Perpustakaan Digital</span></h4>
-                    <p class="text-muted">Sebelum login pastikan anda telah punya akun.</p>
+                    <img src="{{ asset('assets/img/logo.png') }}" alt="logo" width="100"
+                        class="mb-5 mt-2 rounded">
+                    <h4 class="text-dark font-weight-normal">Selamat Datang di <span class="font-weight-bold">IPOS</span></h4>
+                    <p class="text-muted">Silakan login dengan akun Anda untuk melanjutkan.</p>
                     @error('message')
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
                             {{$message}}
@@ -21,11 +20,11 @@
                     <form method="POST" action="{{ url('login') }}" class="needs-validation" novalidate="">
                         @csrf
                         <div class="form-group">
-                            <label for="nip_nik_nisn">NISN/NIP/NIK</label>
-                            <input id="nip_nik_nisn" type="number" class="form-control" name="nip_nik_nisn" tabindex="1"
-                                required autofocus value="{{ old('nip_nik_nisn') }}" placeholder="Masukkan NISN/NIP/NIK">
+                            <label for="email">Email</label>
+                            <input id="email" type="email" class="form-control" name="email" tabindex="1"
+                                required autofocus value="{{ old('email') }}" placeholder="Masukkan Email">
                             <div class="invalid-feedback">
-                                Masukkan NISN/NIP/NIK anda
+                                Masukkan email Anda
                             </div>
                         </div>
 
@@ -42,7 +41,7 @@
                                     </span>
                                 </div>
                                 <div class="invalid-feedback">
-                                    Masukkan Password anda
+                                    Masukkan password Anda
                                 </div>
                             </div>
                         </div>
@@ -60,14 +59,10 @@
                 </div>
             </div>
             <div class="col-lg-8 bg-white col-12 order-lg-2 order-1 min-vh-100 background-walk-y position-relative overlay-gradient-bottom d-none d-lg-block d-xl-block"
-                data-background="{{ asset('assets/img/5834.jpg') }}">
+                data-background="{{ asset('assets/img/banner-1.png') }}">
                 <div class="absolute-bottom-left index-2">
                     <div class="text-light p-5 pb-2">
-                        <div class="mb-5 pb-3">
-                            <h1 class="mb-2 display-4 font-weight-bold">Selamat Datang</h1>
-                            <h5 class="font-weight-normal text-muted-transparent">Buku adalah jendela dunia, perpustakaan adalah pintunya. Mari kita buka bersama.</h5>
-                        </div>
-                       Develop By<a class="text-light bb" target="_blank" href="#">MAN Parepare</a>
+                        Develop by <a class="text-light bb" target="_blank" href="#">RayCorp</a>
                     </div>
                 </div>
             </div>

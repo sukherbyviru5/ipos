@@ -1,133 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    @include('meta')
+    <meta charset="UTF-8">
+     @include('meta')
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="{{ asset('assets/mix/custom.css') }}">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-    {{-- link css --}}
-    <link rel="stylesheet" href="{{ asset('mobile/dist/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('mobile/dist/css/tabler-icons.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('mobile/dist/css/animate.css') }}">
-    <link rel="stylesheet" href="{{ asset('mobile/dist/css/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('mobile/dist/css/magnific-popup.css') }}">
-    <link rel="stylesheet" href="{{ asset('mobile/dist/css/nice-select.css') }}">
-    <link rel="stylesheet" href="{{ asset('mobile/dist/style.css') }}">
-    <link rel="manifest" href="{{ asset('mobile/dist/manifest.json') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Alata&family=Itim&family=Lora:ital,wght@0,400..700;1,400..700&family=Onest:wght@100..900&display=swap"
+    rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ asset('dist/icon/awesome.js') }}"></script>
 </head>
-@yield('styles')
-<body>
-    <div class="preloader" id="preloader">
-        <div class="spinner-grow text-secondary" role="status">
-            <div class="sr-only"></div>
-        </div>
-    </div>
-    <div class="header-area" id="headerArea">
-        <div class="container h-100 p-2 d-flex align-items-center justify-content-between d-flex rtl-flex-d-row-r">
-            @if (request()->is('/'))
-                <div class="logo-wrapper">
-                    <a href="{{ url('/') }}">
-                        <img src="{{ asset(App\Models\SettingApp::first()->logo ?? 'mobile/dist/img/core-img/logo-small.png') }}" alt="Logo" width="40">
-                    </a>
-                </div>
-            @else
-                <div class="back-button me-2">
-                  <a href="javascript:history.back()"><i class="ti ti-arrow-left"></i></a>
-                </div>
-                <div class="page-heading">
-                  <h6 class="mb-0">@yield('title')</h6>
-                </div>
-            @endif
-           
-            <div class="navbar-logo-container d-flex align-items-center">
-                @if (session()->get('is_siswa') || session()->get('is_guru'))
-                  <div class="suha-navbar-toggler ms-2" data-bs-toggle="offcanvas" data-bs-target="#suhaOffcanvas" aria-controls="suhaOffcanvas">
-                    <div><span></span><span></span><span></span></div>
-                  </div>
-                @elseif (session()->get('is_admin'))
-                  <a href="{{ url('admin') }}" class="btn btn-warning ms-2">Dashboard</a>
-                @else
-                  <a href="{{ url('login') }}" class="btn btn-warning ms-2">
-                  Masuk <i class="ti ti-login"></i> 
-                  </a>
-                @endif
+@stack('styles')
+
+<body class="bg-white font-sans">
+    <div class="min-h-screen flex flex-col">
+        <main class="flex-grow">
+            <div id="loading-overlay" class="loading-overlay">
+                <img src="{{ asset('assets/img/logo.png') }}" alt="Loading" class="loading-logo">
             </div>
-        </div>
-    </div>
-    @if (session()->get('is_siswa') || session()->get('is_guru'))
-        <div class="offcanvas offcanvas-start suha-offcanvas-wrap" tabindex="-1" id="suhaOffcanvas" aria-labelledby="suhaOffcanvasLabel">
-            <button class="btn-close btn-close-white" type="button" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            <div class="offcanvas-body">
-                <div class="sidenav-profile">
-                    <div class="user-profile">
-                        <img style="border-radius: 5px !important;" src="{{ asset( App\Models\Siswa::getall()->foto ?? App\Models\SettingApp::first()->logo) }}" alt="User Profile">
+
+            <el-dialog>
+                <dialog id="mobile-filters" class="overflow-hidden backdrop:bg-transparent lg:hidden">
+                    <el-dialog-backdrop
+                        class="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"></el-dialog-backdrop>
+                    <div tabindex="0" class="fixed inset-0 flex focus:outline-none">
+                        <el-dialog-panel
+                            class="relative ml-auto flex size-full max-w-xs transform flex-col overflow-y-auto bg-white pt-4 pb-6 shadow-xl transition duration-300 ease-in-out data-closed:translate-x-full">
+                            <div class="flex items-center justify-between px-4">
+                                <h2 class="text-lg font-medium text-gray-900 flex items-center">
+                                    <i class="fa-solid fa-filter mr-2 text-indigo-600"></i>Filter
+                                </h2>
+                                <button type="button" command="close" commandfor="mobile-filters"
+                                    class="relative -mr-2 flex size-10 items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
+                                    <span class="absolute -inset-0.5"></span>
+                                    <span class="sr-only">Tutup menu</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                        data-slot="icon" aria-hidden="true" class="size-6">
+                                        <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <form class="mt-4 border-t border-dashed" method="GET" action="{{ route('home') }}">
+                                <h3 class="sr-only">Kategori</h3>
+                                <ul role="list" class="px-2 py-3 font-medium text-gray-900">
+                                    <li>
+                                        <a href="{{ route('home') }}"
+                                            class="block rounded-md px-2 py-3 transition-colors">SEMUANYA</a>
+                                    </li>
+                                    @foreach ($categories as $category)
+                                        <li>
+                                            <a href="{{ route('home', ['category' => $category->slug]) }}"
+                                                class="block rounded-md px-2 py-3 transition-colors {{ request('category') == $category->slug ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50' }}">{{ $category->name }}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </form>
+                        </el-dialog-panel>
                     </div>
-                    <div class="user-info">
-                        <h5 class="user-name mb-1 text-white">{{ session()->get('nama') }}</h5>
-                        @php
-                            if (session()->get('is_siswa')) {
-                                $siswa = App\Models\Siswa::getall();
-                                if ($siswa && $siswa->kelas) {
-                                    $data = 'Kelas ' . $siswa->kelas->tingkat_kelas . ' ' . $siswa->kelas->kelompok . ' ( ' . $siswa->kelas->urusan_kelas . ' ) ( Jurusan ' . $siswa->kelas->jurusan . ' )';
-                                } else {
-                                    $data = '-';
-                                }
-                            } elseif (session()->get('is_guru')) {
-                                $data = App\Models\Guru::getall()->nama_mata_pelajaran;
-                            } else {
-                                $data = 'Admin';
-                            }
-                        @endphp
-                        <p class="available-balance text-white">{{ $data }}</p>
-                    </div>
-                </div>
-                <ul class="sidenav-nav ps-0">
-                    @if (session()->get('is_guru'))
-                        <li><a href="{{ url('guru') }}"><i class="ti ti-dashboard"></i>Dashboard</a></li>
-                        <li><a href="{{ url('guru/profil') }}"><i class="ti ti-user"></i>My Profile</a></li>
-                        <li><a href="{{ url('guru/publikasi') }}"><i class="ti ti-file-text"></i>Publikasi</a></li>
-                        <li><a href="{{ url('guru/peminjaman') }}"><i class="ti ti-book"></i>Buku Pinjaman</a></li>
-                    @else
-                        <li><a href="{{ url('siswa') }}"><i class="ti ti-dashboard"></i>Dashboard</a></li>
-                        <li><a href="{{ url('siswa/profil') }}"><i class="ti ti-user"></i>My Profile</a></li>
-                        <li><a href="{{ url('siswa/publikasi') }}"><i class="ti ti-file-text"></i>Publikasi</a></li>
-                        <li><a href="{{ url('siswa/peminjaman') }}"><i class="ti ti-book"></i>Buku Pinjaman</a></li>
-                    @endif
-                    
-                    <li><a href="{{ url('logout') }}"><i class="ti ti-logout"></i>Sign Out</a></li>
-                </ul>
+                </dialog>
+            </el-dialog>
+            @yield('content')
+        </main>
+
+        <footer class="shadow-inner text-black py-6 no-print">
+            <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+                <p class="text- text-center md:text-left mb-4 md:mb-0">
+                    Copyright &copy; <a href="https://lunaray.id" class="hover:text-blue-400">Lunaray</a>, All Rights
+                    Reserved
+                </p>
             </div>
-        </div>
-    @endif
-    <div class="page-content-wrapper">
-        @yield('content')
+        </footer>
     </div>
-    <div class="internet-connection-status" id="internetStatus"></div>
-    <div class="footer-nav-area" id="footerNav">
-        <div class="suha-footer-nav">
-            <ul class="h-100 d-flex align-items-center justify-content-between ps-0 d-flex rtl-flex-d-row-r">
-                <li><a href="{{ url('/') }}"><i class="ti ti-home"></i>Home</a></li>
-                <li><a href="{{ url('profil') }}"><i class="ti ti-user"></i>Profil</a></li>
-                <li><a href="{{ url('foto') }}"><i class="ti ti-photo"></i>Foto Kegiatan</a></li>
-                <li><a href="{{ url('buku') }}"><i class="ti ti-book"></i>Buku</a></li>
-                <li><a href="{{ url('artikel') }}"><i class="ti ti-file-text"></i>Publikasi</a></li>
-            </ul>
-        </div>
-    </div>
-    @yield('scripts')
-    <script src="{{ asset('mobile/dist/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/waypoints.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/jquery.easing.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/jquery.magnific-popup.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/jquery.counterup.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/jquery.countdown.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/jquery.passwordstrength.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/jquery.nice-select.min.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/theme-switching.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/no-internet.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/active.js') }}"></script>
-    <script src="{{ asset('mobile/dist/js/pwa.js') }}"></script>
+
 </body>
+@stack('scripts')
+<script>
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        document.getElementById("cart-count").textContent = cart.length;
+    }
+
+    document.addEventListener("DOMContentLoaded", updateCartCount);
+
+    document.addEventListener("cart-updated", updateCartCount);
+
+    document.querySelectorAll(".add-to-cart").forEach(btn => {
+        btn.addEventListener("click", function() {
+            let id = this.dataset.id;
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            if (!cart.includes(id)) {
+                cart.push(id);
+                localStorage.setItem("cart", JSON.stringify(cart));
+                document.dispatchEvent(new Event("cart-updated"));
+            }
+            alert('Produk dimasukan kekeranjang.')
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+
 </html>

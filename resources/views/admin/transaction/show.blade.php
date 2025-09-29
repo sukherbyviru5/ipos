@@ -1,5 +1,7 @@
 @extends('master')
+
 @section('title', 'Detail Transaksi')
+
 @section('content')
     <div class="main-content">
         <section class="section">
@@ -57,8 +59,26 @@
                                         <td>{{ $transaction->user->email }}</td>
                                     </tr>
                                     <tr>
+                                        <th>Subtotal</th>
+                                        <td>Rp {{ number_format($transaction->items->sum(fn($item) => $item->subtotal), 0, ',', '.') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Diskon</th>
+                                        <td>
+                                            @if (\App\Models\Voucher::getCode($transaction->voucher_code)  > 0)
+                                                {{ \App\Models\Voucher::getCode($transaction->voucher_code)  }}% (Rp {{ number_format($transaction->items->sum(fn($item) => $item->subtotal) * (\App\Models\Voucher::getCode($transaction->voucher_code)  / 100), 0, ',', '.') }})
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th>Total Amount</th>
                                         <td>Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Kode Voucher</th>
+                                        <td>{{ $transaction->voucher_code ?? '-' }}</td>
                                     </tr>
                                     <tr>
                                         <th>Status Pembayaran</th>
@@ -111,6 +131,16 @@
                                 @endforeach
                             </tbody>
                             <tfoot>
+                                <tr>
+                                    <th colspan="4" class="text-right">Subtotal</th>
+                                    <th>Rp {{ number_format($transaction->items->sum(fn($item) => $item->subtotal), 0, ',', '.') }}</th>
+                                </tr>
+                                @if ($transaction->discount > 0)
+                                    <tr>
+                                        <th colspan="4" class="text-right">Diskon ({{ \App\Models\Voucher::getCode($transaction->voucher_code) }}%)</th>
+                                        <th>- Rp {{ number_format($transaction->items->sum(fn($item) => $item->subtotal) * (\App\Models\Voucher::getCode($transaction->voucher_code)  / 100), 0, ',', '.') }}</th>
+                                    </tr>
+                                @endif
                                 <tr>
                                     <th colspan="4" class="text-right">Total</th>
                                     <th>Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}</th>

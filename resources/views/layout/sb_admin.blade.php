@@ -53,6 +53,11 @@
                     <i class="fas fa-tags"></i> <span>Merk / Kategori</span>
                 </a>
             </li>
+            <li {{ $sb == 'Voucher' ? 'class=active' : '' }}>
+                <a class="nav-link" href="{{ url('admin/manage-master/voucher') }}">
+                    <i class="fas fa-ticket-alt"></i> <span>Voucher / Diskon</span>
+                </a>
+            </li>
             <li {{ $sb == 'Product' ? 'class=active' : '' }}>
                 <a class="nav-link" href="{{ url('admin/manage-master/products') }}">
                     <i class="fas fa-box"></i> <span>Produk</span>

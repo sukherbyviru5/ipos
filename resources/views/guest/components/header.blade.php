@@ -27,7 +27,6 @@
             </form>
         </div>
 
-        {{-- 🛒 Keranjang --}}
         <div class="relative">
             <a href="/cart" type="button" id="cart-btn"
                 class="text-gray-600 hover:text-indigo-600 text-2xl relative">
@@ -37,7 +36,6 @@
             </a>
         </div>
 
-        {{-- 📱 Filter (mobile) --}}
         <button type="button" command="show-modal" commandfor="mobile-filters"
             class=" lg:hidden text-gray-600 hover:text-indigo-600 text-2xl relative">
             <span class="sr-only">Filter</span>

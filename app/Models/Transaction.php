@@ -15,6 +15,8 @@ class Transaction extends Model
         'payment_status',
         'delivery_type',
         'delivery_desc',
+        'voucher_code',
+        'discount',
         'midtrans_order_id',
         'midtrans_transaction_id',
     ];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Midtrans\Snap;
 use Midtrans\Config;
 use App\Models\Product;
+use App\Models\Voucher;
 use App\Models\Category;
 use Midtrans\Notification;
 use App\Models\Transaction;
@@ -82,6 +83,21 @@ class GuestController extends Controller
     {
         $grossAmount = 0;
         $itemDetails = [];
+        $discount = 0;
+        $voucherCode = null;
+
+        if ($request->has('voucher') && !empty($request->voucher)) {
+            $voucher = Voucher::where('code', $request->voucher)->first();
+            if ($voucher && $voucher->status === 'ACTIVE') {
+                $discount = $voucher->percent;
+                $voucherCode = $voucher->code;
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $voucher ? 'Voucher tidak aktif.' : 'Voucher tidak ditemukan.'
+                ], 400);
+            }
+        }
 
         if ($request->has('items')) {
             $items = $request->items;
@@ -119,12 +135,26 @@ class GuestController extends Controller
             ];
         }
 
+        $discountAmount = $discount ? ($grossAmount * $discount / 100) : 0;
+        $finalAmount = $grossAmount - $discountAmount;
+
+        if ($discountAmount > 0) {
+            $itemDetails[] = [
+                'id' => 'DISCOUNT',
+                'price' => -(int)$discountAmount,
+                'quantity' => 1,
+                'name' => 'Discount ' . $discount . '%',
+            ];
+        }
+
         $transaction = Transaction::create([
             'user_id' => auth()->id(),
-            'total_amount' => $grossAmount,
+            'total_amount' => $finalAmount,
             'payment_status' => 'pending',
             'delivery_type' => $request->delivery_type ?? 'pickup',
             'delivery_desc' => $request->delivery_desc,
+            'voucher_code' => $voucherCode,
+            'discount' => $discountAmount,
             'midtrans_order_id' => uniqid('ORDER-'),
         ]);
 
@@ -150,7 +180,7 @@ class GuestController extends Controller
         $params = [
             'transaction_details' => [
                 'order_id' => $transaction->midtrans_order_id,
-                'gross_amount' => (int) $grossAmount,
+                'gross_amount' => (int) $finalAmount,
             ],
             'item_details' => $itemDetails,
             'customer_details' => [
@@ -208,5 +238,42 @@ class GuestController extends Controller
         }
         $categories = Category::select(['id', 'name', 'slug'])->get();
         return view('guest.checkout-success', compact('categories', 'transaction'));
+    }
+
+
+    /**
+     * Cek validitas kode voucher
+     */
+    public function voucher(Request $request)
+    {
+        $request->validate([
+            'voucher' => 'required|string'
+        ]);
+
+        $voucher = Voucher::where('code', $request->voucher)->first();
+
+        if (!$voucher) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kode voucher tidak ditemukan.'
+            ], 404);
+        }
+
+        if ($voucher->status == 'NON ACTIVE') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Voucher sudah tidak aktif.'
+            ], 400);
+        }
+      
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Voucher valid.',
+            'data' => [
+                'code' => $voucher->code,
+                'discount' => $voucher->percent,
+                'name' => $voucher->name,
+            ]
+        ]);
     }
 }

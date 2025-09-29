@@ -92,8 +92,15 @@
                                             <tr>
                                                 <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-6 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">Subtotal</th>
                                                 <th scope="row" class="pl-6 pr-3 pt-6 text-left text-sm font-normal text-gray-500 sm:hidden">Subtotal</th>
-                                                <td class="pl-3 pr-6 pt-6 text-right text-sm text-gray-500 sm:pr-0">Rp. {{ number_format($transaction->total_amount) }}</td>
+                                                <td class="pl-3 pr-6 pt-6 text-right text-sm text-gray-500 sm:pr-0">Rp. {{ number_format($transaction->total_amount + ($transaction->discount ?? 0)) }}</td>
                                             </tr>
+                                            @if ($transaction->discount > 0)
+                                                <tr>
+                                                    <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">Diskon ({{ \App\Models\Voucher::getCode($transaction->voucher_code) }}%):</th>
+                                                    <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden">Diskon ({{ \App\Models\Voucher::getCode($transaction->voucher_code) }}%):</th>
+                                                    <td class="pl-3 pr-6 pt-4 text-right text-sm text-green-600 sm:pr-0">- Rp. {{ number_format($transaction->discount) }}</td>
+                                                </tr>
+                                            @endif
                                             <tr>
                                                 <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">Total</th>
                                                 <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">Total</th>

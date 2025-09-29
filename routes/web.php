@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DashboardController as DashboardAdmin;
 use App\Http\Controllers\Admin\ManageMaster\UserController as UserAdmin;
 use App\Http\Controllers\Admin\ManageMaster\CategoryController as CategoryAdmin;
 use App\Http\Controllers\Admin\ManageMaster\ProductController as ProductAdmin;
+use App\Http\Controllers\Admin\ManageMaster\VoucherController as VoucherAdmin;
 use App\Http\Controllers\Admin\TransactionController as TransactionAdmin;
 # Sales Controllers
 use App\Http\Controllers\Sales\DashboardController as DashboardSales;
@@ -35,6 +36,7 @@ Route::get('/product/{slug}', [GuestController::class, 'showProduct'])->name('pr
 Route::post('/checkout', [GuestController::class, 'checkout'])->name('checkout');
 Route::post('/midtrans/callback', [GuestController::class, 'callback'])->name('midtrans.callback');
 Route::get('/checkout-success', [GuestController::class, 'success'])->name('checkout.success');
+Route::post('/voucher', [GuestController::class, 'voucher'])->name('checkout.voucher');
 
 # -------------------- ADMIN --------------------
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
@@ -58,6 +60,14 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
             Route::post('get', [CategoryAdmin::class, 'get']);
             Route::post('update', [CategoryAdmin::class, 'update']);
             Route::delete('/', [CategoryAdmin::class, 'delete']);
+        });
+        Route::prefix('voucher')->group(function () {
+            Route::get('/', [VoucherAdmin::class, 'index']);
+            Route::post('/', [VoucherAdmin::class, 'create']);
+            Route::get('all', [VoucherAdmin::class, 'getall']);
+            Route::post('get', [VoucherAdmin::class, 'get']);
+            Route::post('update', [VoucherAdmin::class, 'update']);
+            Route::delete('/', [VoucherAdmin::class, 'delete']);
         });
         Route::prefix('products')->group(function () {
             Route::get('/', [ProductAdmin::class, 'index']);

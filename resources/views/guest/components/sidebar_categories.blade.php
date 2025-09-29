@@ -1,7 +1,7 @@
 <div class="hidden lg:block sticky top-24 max-h-[80vh] overflow-y-auto">
     <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center">
         <i class="fa-solid fa-tags mr-2 text-indigo-600"></i>
-        Kategori
+        Merk
     </h3>
     <ul role="list" class="space-y-2 text-sm font-medium text-gray-700 p-2">
         <li>

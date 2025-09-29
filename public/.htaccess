@@ -1,8 +1,6 @@
 
-RewriteCond %{HTTP_REFERER} !^https://perpustakaan-digital-parepare.test/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^https://perpustakaan-digital-parepare.test$      [NC]
-RewriteCond %{HTTP_REFERER} !^https://perpustakaan-digital-parepare.laravel.cloud/.*$      [NC]
-RewriteCond %{HTTP_REFERER} !^https://perpustakaan-digital-parepare.laravel.cloud$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://pos.beautylatory.com/.*$      [NC]
+RewriteCond %{HTTP_REFERER} !^https://pos.beautylatory.com$      [NC]
 
 RewriteRule .*\.(jpg|jpeg|gif|png|bmp)$ - [F,NC]
 

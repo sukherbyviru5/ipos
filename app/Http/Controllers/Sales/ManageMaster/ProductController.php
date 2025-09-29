@@ -24,17 +24,17 @@ class ProductController extends Controller
 
     public function getall(Request $request)
     {
-        $query = Product::select('products.id', 'products.name', 'products.slug', 'products.price', 'products.stock', 'categories.name as category_name')
-                ->leftJoin('photo_product', 'products.id', '=', 'photo_product.id_product')
-                ->join('categories', 'products.category_id', '=', 'categories.id')
-                ->groupBy('products.id')
-                ->orderBy('products.name', 'ASC')
-                ->get();
+        $query = Product::with(['category', 'photos'])
+            ->orderBy('id', 'desc')
+            ->get();
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('category_name', function (Product $product) {
+                return $product->category ? $product->category->name : '<span class="text-muted">No Category</span>';
+            })
             ->addColumn('photos_preview', function (Product $product) {
-                $firstPhoto = $product->photos()->first();
+                $firstPhoto = $product->photos->first();
                 if ($firstPhoto) {
                     return '<img src="' . asset($firstPhoto->foto) . '" width="50" class="img-thumbnail">';
                 }
@@ -53,7 +53,7 @@ class ProductController extends Controller
                 </div>
                 ';
             })
-            ->rawColumns(['photos_preview', 'action'])
+            ->rawColumns(['category_name', 'photos_preview', 'action'])
             ->make(true);
     }
 

@@ -1,7 +1,7 @@
 <div class="flex flex-col items-baseline justify-between border-b-2 border-dashed pt-10 pb-6 sm:flex-row no-print">
     <div>
         <h1 class="text-4xl font-bold tracking-tight text-gray-900 flex items-center">
-            <img src="{{ asset('assets/img/logo.png') }}" alt="" srcset="" width="100">
+            <img src="{{ asset('assets/img/logo-black.png') }}" alt="" srcset="" width="100">
         </h1>
         <p class="mt-2 text-base text-gray-500">Temukan koleksi produk lunaray pilihan terbaru kami.</p>
     </div>

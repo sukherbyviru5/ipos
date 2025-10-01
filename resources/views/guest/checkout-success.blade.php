@@ -83,8 +83,8 @@
                                                         <div class="mt-1 truncate text-gray-500">{{ $item->product->category->name ?? 'No description' }}</div>
                                                     </td>
                                                     <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ $item->qty }}</td>
-                                                    <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">Rp. {{ number_format($item->price) }}</td>
-                                                    <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">Rp. {{ number_format($item->subtotal) }}</td>
+                                                    <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">Rp. {{ number_format($item->price,0,',','.') }}</td>
+                                                    <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">Rp. {{ number_format($item->subtotal,0,',','.') }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -104,7 +104,7 @@
                                             <tr>
                                                 <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-semibold text-gray-900 sm:table-cell sm:pl-0">Total</th>
                                                 <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-semibold text-gray-900 sm:hidden">Total</th>
-                                                <td class="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Rp. {{ number_format($transaction->total_amount) }}</td>
+                                                <td class="pl-3 pr-4 pt-4 text-right text-sm font-semibold text-gray-900 sm:pr-0">Rp. {{ number_format($transaction->total_amount,0,',','.') }}</td>
                                             </tr>
                                         </tfoot>
                                     </table>

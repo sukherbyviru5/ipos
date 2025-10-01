@@ -151,7 +151,7 @@
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $transaction->user_name }}</td>
-                        <td class="total-amount">Rp. {{ number_format($transaction->total_amount, 2) }}</td>
+                        <td class="total-amount">Rp. {{ number_format($transaction->total_amount,0,',','.') }}</td>
                         <td>{{ $transaction->payment_status }}</td>
                         <td>{{ $transaction->delivery_type }}</td>
                         <td>{{ $transaction->created_at->format('d-m-Y H:i') }}</td>

@@ -60,7 +60,7 @@
 
                                         <div class="mt-4 lg:row-span-3 lg:mt-0">
                                             <h2 class="sr-only">Product information</h2>
-                                            <p class="text-2xl tracking-tight text-gray-900">Rp. {{ number_format($product->price) }}</p>
+                                            <p class="text-2xl tracking-tight text-gray-900">Rp. {{ number_format($product->price,0,',','.') }}</p>
 
                                             <form class="mt-5" id="checkout-form">
                                                 @csrf
@@ -111,7 +111,7 @@
                                                 <!-- Total Price -->
                                                 <div class="mt-4">
                                                     <h3 class="text-sm font-medium text-gray-900">Total Bayar</h3>
-                                                    <p class="text-xl font-semibold text-gray-900" id="total-price">Rp. {{ number_format($product->price) }}</p>
+                                                    <p class="text-xl font-semibold text-gray-900" id="total-price">Rp. {{ number_format($product->price,0,',','.') }}</p>
                                                     <p class="text-sm text-gray-600 hidden" id="original-price"></p>
                                                     <p class="text-sm text-green-600 hidden" id="discount-info"></p>
                                                 </div>

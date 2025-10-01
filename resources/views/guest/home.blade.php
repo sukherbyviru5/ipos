@@ -35,7 +35,7 @@
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <p class="text-xl font-bold text-gray-900">
-                                            Rp. {{ number_format($product->price) }}
+                                            Rp. {{ number_format($product->price,0,',','.') }}
                                         </p>
                                         <button type="button"
                                             class="rounded-full  transition add-to-cart"

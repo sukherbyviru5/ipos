@@ -17,9 +17,15 @@
                         <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                             @foreach($products as $product)
                             <div class="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                                <a href="{{ route('product.show', $product->slug) }}" class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none sm:h-80">
-                                    <img src="{{ $product->photos->first() ? asset($product->photos->first()->foto) : asset('assets/img/human.png') }}" alt="{{ $product->name }}" class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105 sm:h-full sm:w-full" />
-                                </a>
+                                @forelse ($product->photos->take(1) as $item)
+                                    <a href="{{ route('product.show', $product->slug) }}" class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none sm:h-80">
+                                        <img src="{{ $item->foto }}" alt="{{ $product->name }}" class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105 sm:h-full sm:w-full" />
+                                    </a>
+                                @empty
+                                    <a href="{{ route('product.show', $product->slug) }}" class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none sm:h-80">
+                                        <img src="{{ asset('assets/img/human.png') }}" alt="{{ $product->name }}" class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105 sm:h-full sm:w-full" />
+                                    </a>
+                                @endforelse
                                 <div class="flex flex-1 flex-col space-y-2 p-4">
                                     <div class="flex-1">
                                         <h3 class="text-sm font-medium text-gray-900">

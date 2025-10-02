@@ -24,10 +24,7 @@ class GuestController extends Controller
 
         $query = Product::select(['id', 'category_id', 'name', 'slug', 'price', 'stock'])->with([
             'category' => fn($query) => $query->select(['id', 'name', 'slug']),
-            'photos' => fn($query) => $query
-                ->select(['id', 'id_product', 'foto'])
-                ->orderBy('id', 'asc')
-                ->take(1),
+            'photos' 
         ]);
 
         if ($request->has('search') && !empty($request->search)) {

@@ -35,7 +35,7 @@ class GuestController extends Controller
             $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
         }
 
-        $products = $query->paginate(12);
+        $products = $query->inRandomOrder()->paginate(12);
 
         return view('guest.home', compact('categories', 'products'));
     }

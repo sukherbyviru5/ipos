@@ -24,7 +24,7 @@
                                     <div class="flex-1">
                                         <h3 class="text-sm font-medium text-gray-900">
                                             <a href="{{ route('product.show', $product->slug) }}">
-                                                {{ $product->name }}
+                                               {{ $product->category->name }} {{ $product->name }}
                                             </a>
                                         </h3>
                                         <p class="mt-1 text-xs text-gray-500">

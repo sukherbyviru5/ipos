@@ -24,7 +24,10 @@ class GuestController extends Controller
 
         $query = Product::select(['id', 'category_id', 'name', 'slug', 'price', 'stock'])->with([
             'category' => fn($query) => $query->select(['id', 'name', 'slug']),
-            'photos' => fn($query) => $query->select(['id', 'id_product', 'foto'])->first(),
+            'photos' => fn($query) => $query
+                ->select(['id', 'id_product', 'foto'])
+                ->orderBy('id', 'asc')
+                ->take(1),
         ]);
 
         if ($request->has('search') && !empty($request->search)) {
@@ -33,14 +36,6 @@ class GuestController extends Controller
 
         if ($request->has('category')) {
             $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
-        }
-
-        if ($request->has('sort')) {
-            if ($request->sort == 'name-asc') {
-                $query->orderBy('name', 'asc');
-            } elseif ($request->sort == 'name-desc') {
-                $query->orderBy('name', 'desc');
-            }
         }
 
         $products = $query->paginate(12);

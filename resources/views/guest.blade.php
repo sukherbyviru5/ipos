@@ -18,7 +18,7 @@
     <div class="min-h-screen flex flex-col">
         <main class="flex-grow">
             <div id="loading-overlay" class="loading-overlay">
-                <img src="{{ asset('assets/img/logo.png') }}" alt="Loading" class="loading-logo">
+                <img src="{{ asset('assets/img/logo-black.png') }}" alt="Loading" class="loading-logo">
             </div>
 
             <el-dialog>
@@ -68,7 +68,7 @@
         <footer class="shadow-inner text-black py-6 no-print">
             <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
                 <p class="text- text-center md:text-left mb-4 md:mb-0">
-                    Copyright &copy; <a href="https://lunaray.id" class="hover:text-blue-400">Lunaray</a>, All Rights
+                    Copyright &copy; <a href="https://lunaray.id" class="hover:text-blue-400">beauty latory</a>, All Rights
                     Reserved
                 </p>
             </div>

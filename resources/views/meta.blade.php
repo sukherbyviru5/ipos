@@ -15,18 +15,18 @@
 
 <meta property="og:title" content="IPOS - Point of Sale System | PT Lunaray Cahya Nanjung">
 <meta property="og:description" content="IPOS adalah sistem Point of Sale dari PT Lunaray Cahya Nanjung yang membantu bisnis mengelola penjualan, stok, dan laporan dengan mudah.">
-<meta property="og:image" content="{{ asset('assets/img/logo.png') }}">
+<meta property="og:image" content="{{ asset('assets/img/logo-black.png') }}">
 <meta property="og:url" content="{{ request()->fullUrl() }}">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="IPOS - Point of Sale System | PT Lunaray Cahya Nanjung">
 <meta name="twitter:description" content="IPOS dari PT Lunaray Cahya Nanjung memudahkan penjualan, stok, dan laporan bisnis.">
-<meta name="twitter:image" content="{{ asset('assets/img/logo.png') }}">
+<meta name="twitter:image" content="{{ asset('assets/img/logo-black.png') }}">
 
 <title>IPOS - Point of Sale | PT Lunaray Cahya Nanjung</title>
 
-<link rel="icon" href="{{ asset('assets/img/logo.png') }}">
-<link rel="apple-touch-icon" href="{{ asset('assets/img/logo.png') }}">
-<link rel="apple-touch-icon" sizes="152x152" href="{{ asset('assets/img/logo.png') }}">
-<link rel="apple-touch-icon" sizes="167x167" href="{{ asset('assets/img/logo.png') }}">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/logo.png') }}">
+<link rel="icon" href="{{ asset('assets/img/logo-black.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('assets/img/logo-black.png') }}">
+<link rel="apple-touch-icon" sizes="152x152" href="{{ asset('assets/img/logo-black.png') }}">
+<link rel="apple-touch-icon" sizes="167x167" href="{{ asset('assets/img/logo-black.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/logo-black.png') }}">

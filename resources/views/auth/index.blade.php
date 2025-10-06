@@ -5,7 +5,7 @@
         <div class="d-flex flex-wrap align-items-stretch">
             <div class="col-lg-4 col-md-12 col-12 order-lg-1 min-vh-100 order-2 bg-white">
                 <div class="p-4 m-3">
-                    <img src="{{ asset('assets/img/logo.png') }}" alt="logo" width="100"
+                    <img src="{{ asset('assets/img/logo-black.png') }}" alt="logo" width="100"
                         class="mb-5 mt-2 rounded">
                     <h4 class="text-dark font-weight-normal">Selamat Datang di <span class="font-weight-bold">IPOS</span></h4>
                     <p class="text-muted">Silakan login dengan akun Anda untuk melanjutkan.</p>

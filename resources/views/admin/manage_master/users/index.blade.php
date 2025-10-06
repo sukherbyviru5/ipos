@@ -128,7 +128,7 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ url('admin/manage-master/users') }}" method="POST" class="needs-validation" novalidate="">
+                <form action="{{ url('admin/manage-master/users/update') }}" method="POST" class="needs-validation" novalidate="">
                     @csrf
                     <input type="hidden" name="id" id="id">
                     <div class="modal-body">

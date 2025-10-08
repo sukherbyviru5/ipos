@@ -11,8 +11,24 @@
             <section aria-labelledby="products-heading" class="pt-6 pb-24">
                 <h2 id="products-heading" class="sr-only">Produk</h2>
                 <div class="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4 lg:items-start">
-                     @include('guest.components.sidebar_categories')
+                    @include('guest.components.sidebar_categories')
+
                     <div class="lg:col-span-3">
+                        @if ($errors->any())
+                            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 flex items-start gap-3" role="alert">
+                                <i class="fa-solid fa-circle-exclamation text-red-500 text-xl mt-0.5"></i>
+                                <div>
+                                    <span class="font-semibold">Terjadi Kesalahan!</span>
+                                    <p class="text-gray-700 mt-1">Mohon periksa kembali data yang Anda masukkan:</p>
+                                    <ul class="list-disc list-inside mt-2 text-gray-700">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        @endif
+
                         @if($products->count() > 0)
                         <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                             @foreach($products as $product)

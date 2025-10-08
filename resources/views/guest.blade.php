@@ -56,12 +56,26 @@
                                                 class="block rounded-md px-2 py-3 transition-colors {{ request('category') == $category->slug ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50' }}">{{ $category->name }}</a>
                                         </li>
                                     @endforeach
+                                    <li>
+                                        <div class="mt-6 border-t pt-4">
+                                            <a href="{{ route('login') }}"
+                                                class="group flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700">
+                                                <i class="fa-solid fa-right-to-bracket mr-2 transition-transform group-hover:translate-x-1"></i>
+                                                @if (!auth()->user())
+                                                    Login / Masuk
+                                                @else
+                                                    Dashboard
+                                                @endif
+                                            </a>
+                                        </div>
+                                    </li>
                                 </ul>
                             </form>
                         </el-dialog-panel>
                     </div>
                 </dialog>
             </el-dialog>
+            
             @yield('content')
         </main>
 

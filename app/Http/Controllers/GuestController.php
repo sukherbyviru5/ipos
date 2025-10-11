@@ -22,7 +22,7 @@ class GuestController extends Controller
     {
         $categories = Category::select(['id', 'name', 'slug', 'description'])->get();
 
-        $query = Product::select(['id', 'category_id', 'name', 'slug', 'price', 'stock'])->with([
+        $query = Product::select(['id', 'category_id', 'name', 'slug', 'price', 'price_real', 'stock'])->with([
             'category' => fn($query) => $query->select(['id', 'name', 'slug']),
             'photos' 
         ]);
@@ -59,7 +59,7 @@ class GuestController extends Controller
      */
     public function showProduct($slug)
     {
-        $product = Product::select(['id', 'category_id', 'name', 'slug', 'price', 'stock', 'neto', 'pieces'])
+        $product = Product::select(['id', 'category_id', 'name', 'slug', 'price', 'stock', 'price_real', 'neto', 'pieces'])
             ->with([
                 'category' => fn($query) => $query->select(['id', 'name', 'slug', 'description']),
                 'photos' => fn($query) => $query->select(['id', 'id_product', 'foto']),

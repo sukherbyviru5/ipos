@@ -325,12 +325,11 @@
                     { data: 'DT_RowIndex', name: 'DT_RowIndex' },
                     { data: 'name', name: 'name' },
                     { data: 'category_name', name: 'category_name' },
-                    {
-                        data: 'price',
-                        name: 'price',
-                        render: function(data) {
-                            return formatRupiah(data);
-                        }
+                    { 
+                        data: 'price_display', 
+                        name: 'price_display',
+                        orderable: false,
+                        searchable: false
                     },
                     { data: 'stock', name: 'stock' },
                     { data: 'photos_preview', name: 'photos_preview' },

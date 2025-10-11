@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\ManageMaster;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\Voucher;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -13,14 +14,23 @@ class VoucherController extends Controller
 {
     public function index()
     {
-        return view('admin.manage_master.voucher.index')->with('sb', 'Voucher');
+        $products = Product::orderBy('id', 'desc')->get();
+        return view('admin.manage_master.voucher.index')->with('products', $products)->with('sb', 'Voucher');
     }
 
     public function getall(Request $request)
     {
-        $query = Voucher::select('id', 'name', 'code', 'percent', 'status')
-                ->orderBy('name', 'ASC')
-                ->get();
+        $query = Voucher::select(
+                'vouchers.id', 
+                'vouchers.name', 
+                'vouchers.code', 
+                'vouchers.percent', 
+                'vouchers.status',
+                'products.name as product_name'
+            )
+            ->leftJoin('products', 'vouchers.product_id', '=', 'products.id')
+            ->orderBy('vouchers.name', 'ASC')
+            ->get();
 
         return DataTables::of($query)
             ->addIndexColumn()
@@ -57,23 +67,51 @@ class VoucherController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
-            'code' => 'required|string|max:50|unique:vouchers,code',
+            'code' => 'required|string|max:50',
             'percent' => 'required|numeric|min:0|max:100',
             'status' => 'required|in:ACTIVE,NON ACTIVE',
+            'products' => 'required|array|min:1',
+            'products.*' => 'exists:products,id',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        Voucher::create([
-            'name' => $request->name,
-            'code' => $request->code,
-            'percent' => $request->percent,
-            'status' => $request->status,
-        ]);
+        $createdCount = 0;
+        foreach ($request->products as $productId) {
+            $uniqueCode = $request->code . '_' . $productId;
 
-        return redirect()->back()->with('message', 'Data voucher berhasil disimpan');
+            if (Voucher::where('code', $uniqueCode)->exists()) {
+                continue;
+            }
+
+            Voucher::create([
+                'name' => $request->name,
+                'code' => $uniqueCode,
+                'percent' => $request->percent,
+                'product_id' => $productId,
+                'status' => $request->status,
+            ]);
+
+            $product = Product::find($productId);
+            if ($product) {
+                $originalPrice = $product->price_real ?? $product->price;
+                $discountedPrice = $originalPrice * (1 - ($request->percent / 100));
+                $product->update([
+                    'price_real' => $originalPrice,
+                    'price' => round($discountedPrice, 2),
+                ]);
+            }
+
+            $createdCount++;
+        }
+
+        if ($createdCount > 0) {
+            return redirect()->back()->with('message', "Data voucher berhasil disimpan untuk {$createdCount} produk dan harga produk telah diperbarui");
+        } else {
+            return redirect()->back()->with('error', 'Tidak ada voucher baru yang dibuat karena kode sudah ada');
+        }
     }
 
     public function get(Request $request)

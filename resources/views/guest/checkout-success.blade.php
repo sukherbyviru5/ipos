@@ -77,13 +77,39 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($transaction->items as $item)
+                                                @php
+                                                    $discountPercent = 0;
+                                                    $discountInfo = null;
+                                                    $hasDiscount = false;
+
+                                                    if ($item->product->price_real && $item->product->price_real > $item->price) {
+                                                        $discountPercent = round((($item->product->price_real - $item->price) / $item->product->price_real) * 100);
+                                                        $hasDiscount = $discountPercent > 0;
+
+                                                        if ($hasDiscount) {
+                                                            $vouchers = $item->product->vouchers;
+                                                            $activeVoucher = $vouchers->firstWhere('status', 'ACTIVE');
+                                                            if ($activeVoucher) {
+                                                                $discountInfo = $activeVoucher->name;
+                                                            }
+                                                        }
+                                                    }
+                                                @endphp
                                                 <tr class="border-b border-gray-200">
                                                     <td class="max-w-0 py-5 pl-4 pr-3 text-sm sm:pl-0">
                                                         <div class="font-medium text-gray-900">{{ $item->product->name ?? 'Product' }}</div>
                                                         <div class="mt-1 truncate text-gray-500">{{ $item->product->category->name ?? 'No description' }}</div>
                                                     </td>
                                                     <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">{{ $item->qty }}</td>
-                                                    <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">Rp. {{ number_format($item->price,0,',','.') }}</td>
+                                                    <td class="hidden px-3 py-5 text-right text-sm text-gray-500 sm:table-cell">
+                                                        @if($hasDiscount)
+                                                            <p class="text-xs text-gray-500 line-through mb-1">Rp. {{ number_format($item->product->price_real,0,',','.') }}</p>
+                                                            <p class="text-sm font-semibold text-gray-900 mb-1">Rp. {{ number_format($item->price,0,',','.') }}</p>
+                                                            <span class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2 py-0.5 rounded-full mb-1">{{ $discountPercent }}% OFF</span>
+                                                        @else
+                                                            Rp. {{ number_format($item->price,0,',','.') }}
+                                                        @endif
+                                                    </td>
                                                     <td class="py-5 pl-3 pr-4 text-right text-sm text-gray-500 sm:pr-0">Rp. {{ number_format($item->subtotal,0,',','.') }}</td>
                                                 </tr>
                                             @endforeach
@@ -95,9 +121,10 @@
                                                 <td class="pl-3 pr-6 pt-6 text-right text-sm text-gray-500 sm:pr-0">Rp. {{ number_format($transaction->total_amount + ($transaction->discount ?? 0)) }}</td>
                                             </tr>
                                             @if ($transaction->discount > 0)
+                                                @php $voucher = \App\Models\Voucher::where('code', $transaction->voucher_code)->first(); @endphp
                                                 <tr>
-                                                    <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">Diskon ({{ \App\Models\Voucher::getCode($transaction->voucher_code) }}%):</th>
-                                                    <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden">Diskon ({{ \App\Models\Voucher::getCode($transaction->voucher_code) }}%):</th>
+                                                    <th scope="row" colspan="3" class="hidden pl-4 pr-3 pt-4 text-right text-sm font-normal text-gray-500 sm:table-cell sm:pl-0">Diskon {{ $voucher?->name ?? '' }} ({{ \App\Models\Voucher::getCode($transaction->voucher_code) }}%):</th>
+                                                    <th scope="row" class="pl-6 pr-3 pt-4 text-left text-sm font-normal text-gray-500 sm:hidden">Diskon {{ $voucher?->name ?? '' }} ({{ \App\Models\Voucher::getCode($transaction->voucher_code) }}%):</th>
                                                     <td class="pl-3 pr-6 pt-4 text-right text-sm text-green-600 sm:pr-0">- Rp. {{ number_format($transaction->discount) }}</td>
                                                 </tr>
                                             @endif

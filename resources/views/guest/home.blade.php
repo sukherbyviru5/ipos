@@ -32,6 +32,24 @@
                         @if($products->count() > 0)
                         <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                             @foreach($products as $product)
+                            @php
+                                $discountPercent = 0;
+                                $discountInfo = null;
+                                $hasDiscount = false;
+
+                                if ($product->price_real && $product->price_real > $product->price) {
+                                    $discountPercent = round((($product->price_real - $product->price) / $product->price_real) * 100);
+                                    $hasDiscount = $discountPercent > 0;
+
+                                    if ($hasDiscount) {
+                                        $vouchers = $product->vouchers;
+                                        $activeVoucher = $vouchers->firstWhere('status', 'ACTIVE');
+                                        if ($activeVoucher) {
+                                            $discountInfo = $activeVoucher->name;
+                                        }
+                                    }
+                                }
+                            @endphp
                             <div class="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                                 @forelse ($product->photos->take(1) as $item)
                                     <a href="{{ route('product.show', $product->slug) }}" class="aspect-h-4 aspect-w-3 bg-gray-200 sm:aspect-none sm:h-80">
@@ -56,9 +74,23 @@
                                         </p>
                                     </div>
                                     <div class="flex items-center justify-between">
-                                        <p class="text-xl font-bold text-gray-900">
-                                            Rp. {{ number_format($product->price,0,',','.') }}
-                                        </p>
+                                        <div class="text-left">
+                                            @if($hasDiscount)
+                                                <p class="text-xs text-gray-500 line-through mb-1">
+                                                    Rp. {{ number_format($product->price_real,0,',','.') }}
+                                                </p>
+                                                <p class="text-xl font-bold text-gray-900 mb-1">
+                                                    Rp. {{ number_format($product->price,0,',','.') }}
+                                                </p>
+                                                <span class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2 py-0.5 rounded-full mb-1">
+                                                    {{ $discountPercent }}% OFF
+                                                </span>
+                                            @else
+                                                <p class="text-xl font-bold text-gray-900">
+                                                    Rp. {{ number_format($product->price,0,',','.') }}
+                                                </p>
+                                            @endif
+                                        </div>
                                         <button type="button"
                                             class="rounded-full  transition add-to-cart"
                                             data-id="{{ $product->id }}">

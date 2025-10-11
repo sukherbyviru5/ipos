@@ -51,6 +51,7 @@
                                 <tr>
                                     <th width="10px">#</th>
                                     <th>Nama</th>
+                                    <th>Produk</th>
                                     <th>Kode</th>
                                     <th>Persentase</th>
                                     <th>Status</th>
@@ -110,6 +111,17 @@
                                 Pilih Status Voucher
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>Products</label>
+                            <select class="form-control select2" name="products[]" multiple="multiple" required="">
+                                @foreach($products as $product)
+                                    <option value="{{ $product->id }}">{{ $product->name ?? $product->title }}</option>
+                                @endforeach
+                            </select>
+                            <div class="invalid-feedback">
+                                Pilih Products
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -164,6 +176,18 @@
                                 Pilih Status Voucher
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>Product</label>
+                            <select class="form-control select2" name="product_id" required="" id="product_id">
+                                <option value="">-- Pilih Product --</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->id }}">{{ $product->name ?? $product->title }}</option>
+                                @endforeach
+                            </select>
+                            <div class="invalid-feedback">
+                                Pilih Product
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Update</button>
@@ -175,6 +199,12 @@
 
     <script>
         $(document).ready(function() {
+            // Inisialisasi Select2 untuk multiple select di add modal dan single di update
+            $('.select2').select2({
+                placeholder: "Pilih Product",
+                allowClear: true
+            });
+
             $('#voucherTable').DataTable({
                 responsive: true,
                 processing: true,
@@ -186,6 +216,7 @@
                 columns: [
                     { data: 'DT_RowIndex', name: 'DT_RowIndex' },
                     { data: 'name', name: 'name' },
+                    { data: 'product_name', name: 'product_name' },
                     { data: 'code', name: 'code' },
                     { data: 'percent', name: 'percent' },
                     { data: 'status', name: 'status' },
@@ -218,6 +249,8 @@
                         $('#code').val(data.code);
                         $('#percent').val(data.percent);
                         $('#status').val(data.status);
+                        // Set selected product untuk single select
+                        $('#product_id').val(data.product_id || '').trigger('change');
                         $('#updateModal').modal('show');
                     },
                     error: function(err) {

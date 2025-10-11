@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\PhotoProduct;
+use App\Models\Voucher;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
@@ -25,6 +26,11 @@ class ProductController extends Controller
     public function getall(Request $request)
     {
         $query = Product::with(['category', 'photos'])
+            ->leftJoin('vouchers', function($join) {
+                $join->on('products.id', '=', 'vouchers.product_id')
+                     ->where('vouchers.status', '=', 'ACTIVE');
+            })
+            ->addSelect('products.*', 'vouchers.percent as discount_percent', 'vouchers.name as voucher_name')
             ->orderBy('id', 'desc')
             ->get();
 
@@ -40,6 +46,28 @@ class ProductController extends Controller
                 }
                 return '<span class="text-muted">No Photo</span>';
             })
+            ->addColumn('price_display', function (Product $product) {
+                $currentPrice = $product->price;
+                $realPrice = $product->price_real ?? $currentPrice;
+                
+                if ($realPrice > $currentPrice && isset($product->discount_percent) && $product->discount_percent > 0) {
+                    $discountInfo = $product->discount_percent . '% off dari ' . $product->voucher_name;
+                    return '
+                        <span class="text-muted"><del>Rp ' . number_format($realPrice) . '</del></span><br>
+                        <strong class="text-success">Rp ' . number_format($currentPrice) . '</strong>
+                        <small class="text-danger d-block">' . $discountInfo . '</small>
+                    ';
+                } elseif ($realPrice > $currentPrice) {
+                    $discountPercent = round((($realPrice - $currentPrice) / $realPrice) * 100);
+                    return '
+                        <span class="text-muted"><del>Rp ' . number_format($realPrice) . '</del></span><br>
+                        <strong class="text-success">Rp ' . number_format($currentPrice) . '</strong>
+                        <small class="text-danger d-block">(' . $discountPercent . '% off)</small>
+                    ';
+                } else {
+                    return '<strong>Rp ' . number_format($currentPrice) . '</strong>';
+                }
+            })
             ->addColumn('action', function (Product $product) {
                 return '
                 <div class="dropdown d-inline dropleft">
@@ -53,7 +81,7 @@ class ProductController extends Controller
                 </div>
                 ';
             })
-            ->rawColumns(['category_name', 'photos_preview', 'action'])
+            ->rawColumns(['category_name', 'photos_preview', 'price_display', 'action'])
             ->make(true);
     }
 
@@ -133,6 +161,26 @@ class ProductController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        // Cek voucher aktif untuk produk ini
+        $voucher = Voucher::where('product_id', $id)->where('status', 'ACTIVE')->first();
+        $newPrice = (float) $request->raw_price;
+        $hasDiscount = false;
+        $resetDiscount = false;
+
+        if ($voucher) {
+            $expectedDiscountedPrice = round($product->price_real * (1 - ($voucher->percent / 100)), 2);
+            if ($newPrice > $expectedDiscountedPrice || $newPrice < $expectedDiscountedPrice) {
+                $resetDiscount = true;
+                $voucher->update(['status' => 'NON ACTIVE']);
+                $message = 'Data produk berhasil diupdate dan diskon voucher dinonaktifkan karena harga tidak sesuai dengan diskon.';
+            } else {
+                $hasDiscount = true;
+                $message = 'Data produk berhasil diupdate.';
+            }
+        } else {
+            $message = 'Data produk berhasil diupdate.';
+        }
+
         $slug = Str::slug($request->name);
         $count = Product::where('slug', $slug)
                     ->where('id', '!=', $id)
@@ -141,17 +189,26 @@ class ProductController extends Controller
             $slug .= '-' . ($count + 1);
         }
 
-        $product->update([
+        $updateData = [
             'name' => $request->name,
             'slug' => $slug,
             'category_id' => $request->category_id,
-            'price' => $request->raw_price,
             'stock' => $request->stock,
             'neto' => $request->neto,
             'pieces' => $request->pieces,
-        ]);
+        ];
 
-        // Handle hapus foto lama
+        if ($hasDiscount) {
+            $updateData['price'] = $newPrice;
+        } else {
+            $updateData['price'] = $newPrice;
+            if ($resetDiscount) {
+                $updateData['price_real'] = $newPrice;
+            }
+        }
+
+        $product->update($updateData);
+
         if ($request->has('deleted_photos') && !empty($request->deleted_photos)) {
             $deletedPhotoIds = explode(',', $request->deleted_photos);
             foreach ($deletedPhotoIds as $photoId) {
@@ -165,7 +222,6 @@ class ProductController extends Controller
             }
         }
 
-        // Handle upload foto baru
         if ($request->hasFile('foto')) {
             foreach ($request->file('foto') as $file) {
                 $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
@@ -178,12 +234,14 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->back()->with('message', 'Data produk berhasil diupdate');
+        return redirect()->back()->with('message', $message);
     }
 
     public function delete(Request $request)
     {
         $product = Product::findOrFail($request->id);
+        
+        Voucher::where('product_id', $request->id)->update(['status' => 'NON ACTIVE']);
         
         foreach ($product->photos as $photo) {
             if (file_exists(public_path($photo->foto))) {

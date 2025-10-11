@@ -14,6 +14,24 @@
 
                     <div class="lg:col-span-3">
                         @if ($product)
+                            @php
+                                $discountPercent = 0;
+                                $discountInfo = null;
+                                $hasDiscount = false;
+
+                                if ($product->price_real && $product->price_real > $product->price) {
+                                    $discountPercent = round((($product->price_real - $product->price) / $product->price_real) * 100);
+                                    $hasDiscount = $discountPercent > 0;
+
+                                    if ($hasDiscount) {
+                                        $vouchers = $product->vouchers;
+                                        $activeVoucher = $vouchers->firstWhere('status', 'ACTIVE');
+                                        if ($activeVoucher) {
+                                            $discountInfo = $activeVoucher->name;
+                                        }
+                                    }
+                                }
+                            @endphp
                             <div class="bg-white">
                                 <div class="">
                                     <nav aria-label="Breadcrumb" class="max-lg:hidden">
@@ -60,7 +78,23 @@
 
                                         <div class="mt-4 lg:row-span-3 lg:mt-0">
                                             <h2 class="sr-only">Product information</h2>
-                                            <p class="text-2xl tracking-tight text-gray-900">Rp. {{ number_format($product->price,0,',','.') }}</p>
+                                            <div class="text-left">
+                                                @if($hasDiscount)
+                                                    <p class="text-xs text-gray-500 line-through mb-1">
+                                                        Rp. {{ number_format($product->price_real,0,',','.') }}
+                                                    </p>
+                                                    <p class="text-2xl tracking-tight text-gray-900 mb-1">
+                                                        Rp. {{ number_format($product->price,0,',','.') }}
+                                                    </p>
+                                                    <span class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2 py-0.5 rounded-full mb-1">
+                                                        {{ $discountPercent }}% OFF
+                                                    </span>
+                                                @else
+                                                    <p class="text-2xl tracking-tight text-gray-900">
+                                                        Rp. {{ number_format($product->price,0,',','.') }}
+                                                    </p>
+                                                @endif
+                                            </div>
 
                                             <form class="mt-5" id="checkout-form">
                                                 @csrf

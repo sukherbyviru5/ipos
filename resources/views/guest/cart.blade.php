@@ -147,6 +147,26 @@
                     totalItems += qty;
                     totalHarga += product.price * qty;
 
+                    let priceDisplay = '';
+                    if (product.price_real && product.price_real > product.price) {
+                        let discountPercent = Math.round(((product.price_real - product.price) / product.price_real) * 100);
+                        let discountInfo = '';
+                        if (product.vouchers && product.vouchers.length > 0) {
+                            let activeVoucher = product.vouchers.find(v => v.status === 'ACTIVE');
+                            if (activeVoucher) {
+                                discountInfo = activeVoucher.name;
+                            }
+                        }
+                        priceDisplay = `
+                            <p class="text-sm text-gray-500 line-through mb-1">Rp. ${parseInt(product.price_real).toLocaleString()}</p>
+                            <p class="text-base font-semibold text-gray-900 mb-1">Rp. ${parseInt(product.price).toLocaleString()}</p>
+                            <span class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2 py-0.5 rounded-full mb-1">${discountPercent}% OFF</span>
+                            ${discountInfo ? `<small class="text-gray-600 block">${discountInfo}</small>` : ''}
+                        `;
+                    } else {
+                        priceDisplay = `<p class="text-base font-semibold text-gray-900">Rp. ${parseInt(product.price).toLocaleString()}</p>`;
+                    }
+
                     let item = document.createElement("div");
                     item.className = "flex flex-col md:flex-row items-center gap-5 py-6 border-b";
 
@@ -156,7 +176,7 @@
                         </div>
                         <div class="flex-1">
                             <h6 class="font-semibold">${product.name}</h6>
-                            <p class="text-gray-500">Rp. ${parseInt(product.price).toLocaleString()}</p>
+                            <div class="text-left">${priceDisplay}</div>
                         </div>
                         <div class="flex items-center">
                             <button class="decrease bg-gray-200 px-3 py-1 rounded-l" data-id="${product.id}">-</button>

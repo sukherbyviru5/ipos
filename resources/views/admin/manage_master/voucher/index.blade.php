@@ -113,7 +113,7 @@
                         </div>
                         <div class="form-group">
                             <label>Products</label>
-                            <select class="form-control select2" name="products[]" multiple="multiple" required="">
+                            <select class="form-control select2" name="products[]" multiple="multiple" >
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}">{{ $product->name ?? $product->title }}</option>
                                 @endforeach
@@ -178,7 +178,7 @@
                         </div>
                         <div class="form-group">
                             <label>Product</label>
-                            <select class="form-control select2" name="product_id" required="" id="product_id">
+                            <select class="form-control select2" name="product_id"  id="product_id">
                                 <option value="">-- Pilih Product --</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}">{{ $product->name ?? $product->title }}</option>

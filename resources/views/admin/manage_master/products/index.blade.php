@@ -67,6 +67,7 @@
                                     <th>Merk</th>
                                     <th>Harga</th>
                                     <th>Stok</th>
+                                    <th>Status</th>
                                     <th>Foto</th>
                                     <th width="10px">Action</th>
                                 </tr>
@@ -139,6 +140,17 @@
                             <input type="text" placeholder="Masukkan Satuan" class="form-control text-uppercase" name="pieces">
                             <div class="invalid-feedback">
                                 Masukkan Satuan
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="form-control" name="status" required>
+                                <option value="">Pilih Status</option>
+                                <option value="Y">Aktif</option>
+                                <option value="N">Non Aktif</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Pilih Merk
                             </div>
                         </div>
                         <div class="form-group">
@@ -220,6 +232,17 @@
                             <input type="text" placeholder="Masukkan Satuan" class="form-control text-uppercase" name="pieces" id="pieces">
                             <div class="invalid-feedback">
                                 Masukkan Satuan
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="form-control" name="status" id="status" required>
+                                <option value="">Pilih Status</option>
+                                <option value="Y">Aktif</option>
+                                <option value="N">Non Aktif</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Pilih Merk
                             </div>
                         </div>
                         <div class="form-group">
@@ -332,6 +355,7 @@
                         searchable: false
                     },
                     { data: 'stock', name: 'stock' },
+                    { data: 'status', name: 'status' },
                     { data: 'photos_preview', name: 'photos_preview' },
                     { data: 'action', name: 'action' }
                 ]
@@ -364,6 +388,7 @@
                         $('#raw_price_update').val(data.price);
                         $('#stock').val(data.stock);
                         $('#neto').val(data.neto);
+                        $('#status').val(data.status);
                         $('#pieces').val(data.pieces);
                         $('#deleted_photos').val('');
                         let preview = $('#image-preview-update');

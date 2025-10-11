@@ -39,6 +39,9 @@ class ProductController extends Controller
             ->addColumn('category_name', function (Product $product) {
                 return $product->category ? $product->category->name : '<span class="text-muted">No Category</span>';
             })
+            ->addColumn('status', function (Product $product) {
+                return $product->status == 'Y' ?  'Aktif' : 'Non Aktif';
+            })
             ->addColumn('photos_preview', function (Product $product) {
                 $firstPhoto = $product->photos->first();
                 if ($firstPhoto) {
@@ -115,6 +118,7 @@ class ProductController extends Controller
             'stock' => $request->stock,
             'neto' => $request->neto,
             'pieces' => $request->pieces,
+            'status' => $request->status,
         ]);
 
         if ($request->hasFile('foto')) {
@@ -196,6 +200,7 @@ class ProductController extends Controller
             'stock' => $request->stock,
             'neto' => $request->neto,
             'pieces' => $request->pieces,
+            'status' => $request->status,
         ];
 
         if ($hasDiscount) {

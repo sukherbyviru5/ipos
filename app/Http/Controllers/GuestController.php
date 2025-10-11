@@ -22,7 +22,7 @@ class GuestController extends Controller
     {
         $categories = Category::select(['id', 'name', 'slug', 'description'])->get();
 
-        $query = Product::select(['id', 'category_id', 'name', 'slug', 'price', 'price_real', 'stock'])->with([
+        $query = Product::where('status', 'Y')->where('price', '>', 0)->select(['id', 'category_id', 'name', 'slug', 'price', 'price_real', 'stock'])->with([
             'category' => fn($query) => $query->select(['id', 'name', 'slug']),
             'photos' 
         ]);
@@ -49,7 +49,7 @@ class GuestController extends Controller
     public function fetchCart(Request $request)
     {
         $productIds = $request->input('ids', []);
-        $products = Product::whereIn('id', $productIds)->get();
+        $products = Product::where('status', 'Y')->whereIn('id', $productIds)->get();
 
         return response()->json($products);
     }
@@ -59,7 +59,7 @@ class GuestController extends Controller
      */
     public function showProduct($slug)
     {
-        $product = Product::select(['id', 'category_id', 'name', 'slug', 'price', 'stock', 'price_real', 'neto', 'pieces'])
+        $product = Product::where('status', 'Y')->select(['id', 'category_id', 'name', 'slug', 'price', 'stock', 'price_real', 'neto', 'pieces'])
             ->with([
                 'category' => fn($query) => $query->select(['id', 'name', 'slug', 'description']),
                 'photos' => fn($query) => $query->select(['id', 'id_product', 'foto']),
@@ -95,7 +95,7 @@ class GuestController extends Controller
             $items = $request->items;
 
             foreach ($items as $item) {
-                $product = Product::findOrFail($item['id']);
+                $product = Product::where('status', 'Y')->findOrFail($item['id']);
                 $quantity = (int) $item['quantity'];
                 $subtotal = $product->price * $quantity;
                 $grossAmount += $subtotal;
@@ -108,7 +108,7 @@ class GuestController extends Controller
                 ];
             }
         } else {
-            $product = Product::findOrFail($request->product_id);
+            $product = Product::where('status', 'Y')->findOrFail($request->product_id);
             $quantity = (int) $request->quantity;
             $grossAmount = $product->price * $quantity;
 
@@ -151,7 +151,7 @@ class GuestController extends Controller
         ]);
 
         foreach ($items as $item) {
-            $product = Product::findOrFail($item['id']);
+            $product = Product::where('status', 'Y')->findOrFail($item['id']);
             $quantity = (int) $item['quantity'];
             $subtotal = $product->price * $quantity;
 
